@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="151847c1-7162-4c99-a354-f4ae650dd19b" name="Changes" comment="">
+    <list default="true" id="151847c1-7162-4c99-a354-f4ae650dd19b" name="Changes" comment="hda">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -22,9 +22,9 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "associatedIndex": 1
-}]]></component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 1
+}</component>
   <component name="ProjectId" id="2njOxRUIQiBRWPvDKkF5mgyDWJT" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectViewState">
@@ -36,7 +36,7 @@
     "JUnit.TestBashar.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "git-widget-placeholder": "master",
+    "git-widget-placeholder": "main",
     "kotlin-language-version-configured": "true",
     "onboarding.tips.debug.path": "C:/Users/Abdallah/Desktop/java-assingmet/src/main/java/org/example/Main.java"
   }
@@ -66,7 +66,20 @@
       <option name="presentableId" value="Default" />
       <updated>1729483268252</updated>
     </task>
+    <task id="LOCAL-00001" summary="hda">
+      <option name="closed" value="true" />
+      <created>1729514599699</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1729514599699</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="hda" />
+    <option name="LAST_COMMIT_MESSAGE" value="hda" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
