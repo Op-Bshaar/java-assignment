@@ -1,5 +1,6 @@
 package org.example;
 
+import java.util.Arrays;
 import java.util.Scanner;
 
 public class Main {
@@ -15,7 +16,7 @@ public class Main {
             String commandIn = scanner.nextLine().trim();
             String[] parts = commandIn.split(" ");
             String cmd = parts[0];
-            String[] argsArray = parts.length > 1 ? new String[]{parts[1]} : new String[0];
+            String[] argsArray = parts.length > 1 ? Arrays.copyOfRange(parts, 1, parts.length) : new String[0];
             Command command;
 
             switch (cmd) {
@@ -29,6 +30,10 @@ public class Main {
                     break;
                 case "ls":
                     command = new LsCommand();
+                    System.out.println(command.run(argsArray));
+                    break;
+                case "pwd":
+                    command = new PwdCommand();
                     System.out.println(command.run(argsArray));
                     break;
                 case "exit":
