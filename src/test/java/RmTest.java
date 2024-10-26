@@ -1,6 +1,6 @@
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import org.example.RmCommand;
+
 import java.nio.file.Paths;
 public class RmTest {
     @Test

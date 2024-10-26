@@ -2,8 +2,10 @@ package org.example;
 
 import java.io.IOException;
 import java.io.PrintStream;
+import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.regex.Matcher;
@@ -45,32 +47,32 @@ public class CommandLineInterpeter {
         Command command;
         switch (commandData.command) {
             case "mkdir":
-                command = new MkdirCommand();
-                System.out.println(command.run(commandData.parameters));
+                String path =  MkdirCommand(commandData.parameters);
+                System.out.println(path);
                 break;
             case "rm":
-                command = new RmCommand();
-                System.out.println(command.run(commandData.parameters));
+                String output  =  RmCommand(commandData.parameters);
+                System.out.println(output);
                 break;
             case "ls":
-                command = new LsCommand();
-                System.out.println(command.run(commandData.parameters));
+                String out =  LsCommand(commandData.parameters);
+                System.out.println(out);
                 break;
             case "pwd":
             {
-                String path = pwd();
-                System.out.println(path);
+                String any = pwd();
+                System.out.println(any);
                 break;   
             }  
             case "cat":
             {
-                String path = commandData.parameters.length > 0 ? commandData.parameters[0]:null;
-                cat(path).forEach(System.out::println);
+                String any = commandData.parameters.length > 0 ? commandData.parameters[0]:null;
+                cat(any).forEach(System.out::println);
                 break;
             }
             case "exit":
-                System.out.println("Exiting..");
-                scanner.close();
+                ExitCommand(scanner);
+
                 return;
             default:
                 System.out.println("Command " + commandData.command + " not found.");
@@ -100,4 +102,72 @@ public class CommandLineInterpeter {
             return Stream.of("cat: " + e.getMessage());
         }
     }
+
+    //bashar command
+
+    public String MkdirCommand(String[] args){
+
+
+            if (args.length < 1) {
+                return "Usage: mkdir <directory_name>";
+            }
+
+            Path dirPath = Paths.get(args[0]);
+            try {
+                Files.createDirectories(dirPath);
+                return "Directory created: " + dirPath.toAbsolutePath();
+            } catch (IOException e) {
+                return "Error creating directory: " + e.getMessage();
+            }
+
+    };
+
+    public  String RmCommand(String[] args){
+
+            if (args.length < 1) {
+                return "Usage: rm <file_or_directory_name>";
+            }
+            Path rmPath = Paths.get(args[0]);
+
+            try{
+                if (Files.isDirectory(rmPath)) {
+                    Files.deleteIfExists(rmPath);
+                    return "Directory deleted: " + rmPath.toAbsolutePath();
+                }else if (Files.isRegularFile(rmPath)) {
+                    Files.deleteIfExists(rmPath);
+                    return "File deleted: " + rmPath.toAbsolutePath();
+                }
+                else{
+                    return "not found and file or directory";
+                }
+
+            }
+            catch (IOException e) {
+                return "Error deleting file or directory: " + e.getMessage();
+            }
+
+    };
+
+    public String LsCommand(String[] args){
+
+            if (args.length < 1) {
+                return "Usage: ls <directory_name>";
+            }
+            Path currentDir = Paths.get(".");
+            StringBuilder listingOutput = new StringBuilder("contents:\n");
+            try (DirectoryStream<Path> stream = Files.newDirectoryStream(currentDir)) {
+                for (Path entry : stream) {
+                    listingOutput.append(entry.getFileName()).append("\n");
+                }
+            } catch (IOException e) {
+                return "Error listing contentes: " + e.getMessage();
+            }
+            return listingOutput.toString();
+        }
+    public void ExitCommand(Scanner scanner){
+        System.out.println("Exiting..");
+        scanner.close();
+        System.exit(0);
+
+    };
 }
