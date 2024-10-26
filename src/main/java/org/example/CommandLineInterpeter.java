@@ -65,7 +65,7 @@ public class CommandLineInterpeter {
             case "cat":
             {
                 String path = commandData.parameters.length > 0 ? commandData.parameters[0]:null;
-                cat(path);
+                cat(path).forEach(System.out::println);
                 break;
             }
             case "exit":
@@ -80,20 +80,24 @@ public class CommandLineInterpeter {
     public String pwd(){
         return System.getProperty("user.dir");
     }
-    public void cat(String path){
+    public Stream<String> cat(String path) {
         if (path == null) {
-            System.out.println( "Usage: cat <file_path>");
-            return;
+            return Stream.of("Usage: cat <file_path>");
         }
+    
         Path filePath = Path.of(path);
         if (Files.isDirectory(filePath)) {
-            System.out.println("cat: " + path + " is a directory not a file!");
-            return;
+            return Stream.of("cat: " + path + " is a directory, not a file!");
         }
-        try  (Stream<String> lines = Files.lines(filePath)) {
-            lines.forEach(System.out::println);
+
+        else if (!Files.exists(filePath)) {
+            return Stream.of("cat: " + path + " does not exist!");
+        }
+        
+        try {
+            return Files.lines(filePath);
         } catch (IOException e) {
-            System.out.println("cat: " + e.getMessage());
+            return Stream.of("cat: " + e.getMessage());
         }
     }
 }
