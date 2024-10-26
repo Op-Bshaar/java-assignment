@@ -1,12 +1,12 @@
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.example.PwdCommand;
-public class PwdTest {
+import org.example.CommandLineInterpeter;
+public class CommandLineInterpeterTest {
     @Test
     public  void testpwd(){
-        PwdCommand pwd = new PwdCommand();
-        String output = pwd.run(new String[0]);
+        CommandLineInterpeter cmd = new CommandLineInterpeter();
+        String output = cmd.pwd();
         String expectedOutput = System.getProperty("user.dir");
         assertEquals(output, expectedOutput);
     }
