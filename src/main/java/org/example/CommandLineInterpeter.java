@@ -1,6 +1,7 @@
 package org.example;
 
 import java.io.IOException;
+import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -34,46 +35,47 @@ public class CommandLineInterpeter {
         
         Scanner scanner = new Scanner(System.in);
         System.out.print(pwd() + "> ");
-
         while (true) {
             String commandIn = scanner.nextLine().trim();
             CommandData commandData = new CommandData(commandIn);
-            Command command;
-
-            switch (commandData.command) {
-                case "mkdir":
-                    command = new MkdirCommand();
-                    System.out.println(command.run(commandData.parameters));
-                    break;
-                case "rm":
-                    command = new RmCommand();
-                    System.out.println(command.run(commandData.parameters));
-                    break;
-                case "ls":
-                    command = new LsCommand();
-                    System.out.println(command.run(commandData.parameters));
-                    break;
-                case "pwd":
-                {
-                    String path = pwd();
-                    System.out.println(path);
-                    break;   
-                }  
-                case "cat":
-                {
-                    String path = commandData.parameters.length > 0 ? commandData.parameters[0]:null;
-                    cat(path);
-                    break;
-                }
-                case "exit":
-                    System.out.println("Exiting..");
-                    scanner.close();
-                    return;
-                default:
-                    System.out.println("Command " + commandData.command + " not found.");
-            }
-            System.out.print(pwd() + "> ");
+            executeCommand(commandData,scanner);
         }
+    }
+    public void executeCommand(CommandData commandData, Scanner scanner){
+        Command command;
+        switch (commandData.command) {
+            case "mkdir":
+                command = new MkdirCommand();
+                System.out.println(command.run(commandData.parameters));
+                break;
+            case "rm":
+                command = new RmCommand();
+                System.out.println(command.run(commandData.parameters));
+                break;
+            case "ls":
+                command = new LsCommand();
+                System.out.println(command.run(commandData.parameters));
+                break;
+            case "pwd":
+            {
+                String path = pwd();
+                System.out.println(path);
+                break;   
+            }  
+            case "cat":
+            {
+                String path = commandData.parameters.length > 0 ? commandData.parameters[0]:null;
+                cat(path);
+                break;
+            }
+            case "exit":
+                System.out.println("Exiting..");
+                scanner.close();
+                return;
+            default:
+                System.out.println("Command " + commandData.command + " not found.");
+        }
+        System.out.print(pwd() + "> ");
     }
     public String pwd(){
         return System.getProperty("user.dir");
