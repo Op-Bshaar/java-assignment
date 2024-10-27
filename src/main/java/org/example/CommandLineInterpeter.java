@@ -3,7 +3,6 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -45,7 +44,7 @@ public class CommandLineInterpeter {
         }
     }
     public void executeCommand(CommandData commandData, Scanner scanner){
-        Command command;
+        
         switch (commandData.command) {
             case "mkdir":
                 String path =  MkdirCommand(commandData.parameters);
