@@ -17,7 +17,6 @@ public class CommandLineInterpeter {
         private CommandData(String commandInput) {
         Pattern pattern = Pattern.compile("\"([^\"]*)\"|\\S+");
         Matcher matcher = pattern.matcher(commandInput);
-
         ArrayList<String> partsList = new ArrayList<>();
         while (matcher.find()) {
             if (matcher.group(1) != null) {
