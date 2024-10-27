@@ -35,6 +35,27 @@ public class CommandLineInterpeterTest {
         }
     }
 
+    @Test
+    public void testCatWithNonExistentFile() {
+        String nonExistentPath = "nonExistentFile.txt";        
+        try (Stream<String> output = cmd.cat(nonExistentPath)) {
+            List<String> lines = output.collect(Collectors.toList());
+            assertEquals(List.of("cat: " + nonExistentPath + " does not exist!"), lines);
+        }
+    }
+
+    @Test
+    public void testCatWithDirectoryPath() throws IOException {
+        Path tempDir = Files.createTempDirectory("testDir");
+
+        try (Stream<String> output = cmd.cat(tempDir.toString())) {
+            List<String> lines = output.collect(Collectors.toList());
+            assertEquals(List.of("cat: " + tempDir + " is a directory, not a file!"), lines);
+        } finally {
+            Files.deleteIfExists(tempDir);
+        }
+    }
+
    @Test
     public void testmkdir(){
        String result = cmd.MkdirCommand(new String[] {"bashar"});
