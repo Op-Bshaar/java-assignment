@@ -1,5 +1,7 @@
 package org.example;
-
+import java.nio.file.attribute.BasicFileAttributes;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.nio.file.DirectoryStream;
@@ -58,6 +60,9 @@ public class CommandLineInterpeter {
                 String out =  LsCommand(commandData.parameters);
                 System.out.println(out);
                 break;
+            case "cd":
+                String help = CdCommand(commandData.parameters);
+                System.out.println(help);
             case "pwd":
             {
                 String any = pwd();
@@ -148,26 +153,75 @@ public class CommandLineInterpeter {
 
     };
 
-    public String LsCommand(String[] args){
+    public String LsCommand(String[] args) {
+        Path currentDir = Paths.get(".");
+        StringBuilder listingOutput = new StringBuilder("\n");
+        listingOutput.append("Directory: ").append(currentDir.toString()).append("\n\n");
+        listingOutput.append(String.format("%-5s %-20s %10s %s\n", "Mode", "LastWriteTime", "Length", "Name"));
+        listingOutput.append("------------------------------------------------------------\n");
 
-            if (args.length < 1) {
-                return "Usage: ls <directory_name>";
+
+
+        //Directory Stream to Iterate Through Files
+
+        try (DirectoryStream<Path> stream = Files.newDirectoryStream(currentDir)) {
+
+            for (Path entry : stream) {
+               // Loop Through Files and Get File Attributes
+
+                BasicFileAttributes attrs = Files.readAttributes(entry, BasicFileAttributes.class);
+
+                String type = attrs.isDirectory() ? "d----" : "-a---";
+
+                String lastModifiedTime = new SimpleDateFormat("MM/dd/yyyy hh:mm a")
+                        .format(new Date(attrs.lastModifiedTime().toMillis()));
+
+                long size = attrs.size();
+                String fileName = entry.getFileName().toString();
+
+                // Formatting the output
+                listingOutput.append(String.format("%-5s %-20s %10d %s\n", type, lastModifiedTime, size, fileName));
             }
-            Path currentDir = Paths.get(".");
-            StringBuilder listingOutput = new StringBuilder("contents:\n");
-            try (DirectoryStream<Path> stream = Files.newDirectoryStream(currentDir)) {
-                for (Path entry : stream) {
-                    listingOutput.append(entry.getFileName()).append("\n");
-                }
-            } catch (IOException e) {
-                return "Error listing contentes: " + e.getMessage();
-            }
-            return listingOutput.toString();
+        } catch (IOException e) {
+            return "Error listing contents: " + e.getMessage();
         }
+
+        return listingOutput.toString();
+    }
+
+
     public void ExitCommand(Scanner scanner){
         System.out.println("Exiting..");
         scanner.close();
         System.exit(0);
 
     };
+
+    public String CdCommand(String[] args) {
+        if (args.length < 1) {
+            return "Usage: cd <directory_name>";
+        }
+
+       //path for traget direcotry
+        Path targetPath = Paths.get(args[0]);
+
+        // Resolve relative paths correctly (e.g., ".." to go up a directory)
+        try {
+            Path newDir = targetPath.isAbsolute() ? targetPath : Paths.get(System.getProperty("user.dir")).resolve(targetPath).normalize();
+
+            // Check if the directory exists and is a directory
+            if (Files.exists(newDir) && Files.isDirectory(newDir)) {
+                // Change the current working directory
+                System.setProperty("user.dir", newDir.toString());
+                return "Changed directory to: " + newDir.toAbsolutePath();
+            } else {
+                return "Directory not found: " + newDir.toAbsolutePath();
+            }
+        } catch (Exception e) {
+            return "Error changing directory: " + e.getMessage();
+        }
+    }
+
 }
+
+

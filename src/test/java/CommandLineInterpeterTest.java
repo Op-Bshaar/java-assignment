@@ -1,9 +1,11 @@
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.example.CommandLineInterpeter;
 
 import java.nio.file.Paths;
+import java.util.Scanner;
 
 public class CommandLineInterpeterTest {
     @Test
@@ -37,6 +39,8 @@ public class CommandLineInterpeterTest {
     }
   @Test
     public  void TestExit(){
-
+      CommandLineInterpeter cmd = new CommandLineInterpeter();
+//      String result = cmd.ExitCommand(Scanner scanner);
+//      assertEquals("Directory deleted: " + Paths.get("bashar").toAbsolutePath(), result);
     }
 }
