@@ -3,7 +3,6 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -21,7 +20,6 @@ public class CommandLineInterpeter {
         private CommandData(String commandInput) {
         Pattern pattern = Pattern.compile("\"([^\"]*)\"|\\S+");
         Matcher matcher = pattern.matcher(commandInput);
-
         ArrayList<String> partsList = new ArrayList<>();
         while (matcher.find()) {
             if (matcher.group(1) != null) {
@@ -46,7 +44,7 @@ public class CommandLineInterpeter {
         }
     }
     public void executeCommand(CommandData commandData, Scanner scanner){
-        Command command;
+        
         switch (commandData.command) {
             case "mkdir":
                 String path =  MkdirCommand(commandData.parameters);
