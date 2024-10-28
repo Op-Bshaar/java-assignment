@@ -92,7 +92,7 @@ public class CommandLineInterpreter {
         return run;
     }
 
-    public Boolean executeCommand(CommandData commandData, PrintStream printStream) {
+    private Boolean executeCommand(CommandData commandData, PrintStream printStream) {
 
         switch (commandData.command) {
             case "mkdir":
