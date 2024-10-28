@@ -36,12 +36,16 @@ public class CommandLineInterpreter {
                 }
             }
 
-            for (int i = 0; i < partsList.size(); i++) {
+            for (int i = partsList.size() - 1; i >= 0; i--) {
                 String part = partsList.get(i);
                 if (part.equals(">") || part.equals(">>")) {
-                    this.redirectFile = partsList.get(i + 1); // file to redirect output
-                    this.append = part.equals(">>"); // append if `>>` is used
-                    partsList = new ArrayList<>(partsList.subList(0, i)); // Remove redirection from command
+                    if (i + 1 < partsList.size()) {  // Ensure there is a filename after `>` or `>>`
+                        this.redirectFile = partsList.get(i + 1);
+                        this.append = part.equals(">>");
+                        partsList = new ArrayList<>(partsList.subList(0, i));
+                    } else {
+                        System.out.println("Usage <command> " + part +" <file path>");
+                    }
                     break;
                 }
             }
