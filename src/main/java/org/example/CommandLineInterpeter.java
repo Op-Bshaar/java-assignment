@@ -61,9 +61,11 @@ public class CommandLineInterpeter {
             case "cd":
                 String help = CdCommand(commandData.parameters);
                 System.out.println(help);
+                break;   
             case "rmdir":
                 String result = RmdirCommand(commandData.parameters);
                 System.out.println(result);
+                break;   
             case "pwd":
             {
                 String any = pwd();
@@ -225,9 +227,16 @@ public class CommandLineInterpeter {
         if (args.length < 1) {
             return "Usage: cd <directory_name>";
         }
-
-       //path for traget direcotry
-        Path targetPath = Paths.get(args[0]);
+        Path targetPath;
+        if ("..".equals(args[0])) {
+            targetPath = Paths.get(System.getProperty("user.dir")).getParent();
+            if (targetPath == null) { // already at the root
+                return "Already at the root directory";
+            }
+        } else {
+            // If a specific directory is provided, use it as the target path
+            targetPath = Paths.get(args[0]);
+        }
 
         // Resolve relative paths correctly (e.g., ".." to go up a directory)
         try {
