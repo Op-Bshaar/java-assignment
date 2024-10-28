@@ -4,11 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="151847c1-7162-4c99-a354-f4ae650dd19b" name="Changes" comment="طلعت عينا">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/CommandLineInterpeter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/CommandLineInterpeter.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/CommandLineInterpeterTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/CommandLineInterpeterTest.java" afterDir="false" />
-    </list>
+    <list default="true" id="151847c1-7162-4c99-a354-f4ae650dd19b" name="Changes" comment="rmdir" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -168,7 +164,23 @@
       <option name="project" value="LOCAL" />
       <updated>1729965308397</updated>
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL-00010" summary="ls,cd">
+      <option name="closed" value="true" />
+      <created>1730047027056</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1730047027056</updated>
+    </task>
+    <task id="LOCAL-00011" summary="rmdir">
+      <option name="closed" value="true" />
+      <created>1730130290459</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1730130290459</updated>
+    </task>
+    <option name="localTasksCounter" value="12" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -177,6 +189,8 @@
     <MESSAGE value="ls,exit,mkdir,rm" />
     <MESSAGE value="test" />
     <MESSAGE value="طلعت عينا" />
-    <option name="LAST_COMMIT_MESSAGE" value="طلعت عينا" />
+    <MESSAGE value="ls,cd" />
+    <MESSAGE value="rmdir" />
+    <option name="LAST_COMMIT_MESSAGE" value="rmdir" />
   </component>
 </project>

@@ -61,6 +61,9 @@ public class CommandLineInterpeter {
             case "cd":
                 String help = CdCommand(commandData.parameters);
                 System.out.println(help);
+            case "rmdir":
+                String result = RmdirCommand(commandData.parameters);
+                System.out.println(result);
             case "pwd":
             {
                 String any = pwd();
@@ -185,6 +188,29 @@ public class CommandLineInterpeter {
         }
 
         return listingOutput.toString();
+    }
+
+
+    public String RmdirCommand(String[] args) {
+        if (args.length < 1) {
+            return "Usage: rmdir <directory_name>";
+        }
+
+        Path dirPath = Paths.get(args[0]);
+        try {
+            Files.walk(dirPath)
+                    .forEach(path -> {
+                        try {
+                            Files.delete(path);
+                        } catch (IOException e) {
+                            throw new RuntimeException("Error deleting " + path + ": " + e.getMessage());
+                        }
+                    });
+
+            return "Directory deleted: " + dirPath.toAbsolutePath();
+        } catch (IOException e) {
+            return "Error deleting directory: " + e.getMessage();
+        }
     }
 
 
