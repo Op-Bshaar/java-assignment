@@ -2,7 +2,9 @@ package org.example;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -12,11 +14,13 @@ import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
-public class CommandLineInterpeter {
+public class CommandLineInterpreter {
     
     private class CommandData {
         private String command;
         private String[] parameters;
+        private String redirectFile = null; 
+        private boolean append = false;  
         private CommandData(String commandInput) {
         Pattern pattern = Pattern.compile("\"([^\"]*)\"|\\S+");
         Matcher matcher = pattern.matcher(commandInput);
@@ -28,6 +32,17 @@ public class CommandLineInterpeter {
                 partsList.add(matcher.group());
             }
         }
+
+        for (int i = 0; i < partsList.size(); i++) {
+            String part = partsList.get(i);
+            if (part.equals(">") || part.equals(">>")) {
+                this.redirectFile = partsList.get(i + 1);  // file to redirect output
+                this.append = part.equals(">>");           // append if `>>` is used
+                partsList = new ArrayList<>(partsList.subList(0, i));  // Remove redirection from command
+                break;
+            }
+        }
+        
         this.command = partsList.get(0);
         this.parameters = partsList.size() > 1 ? partsList.subList(1, partsList.size()).toArray(new String[0]) : new String[0];
     }
@@ -36,60 +51,85 @@ public class CommandLineInterpeter {
     public void runCommandLine(){
         
         Scanner scanner = new Scanner(System.in);
-        System.out.print(pwd() + "> ");
-        while (true) {
+        boolean run = true;
+        while (run) {
+            System.out.print(pwd() + "> ");
             String commandIn = scanner.nextLine().trim();
             CommandData commandData = new CommandData(commandIn);
-            executeCommand(commandData,scanner);
+            PrintStream printStream = System.out; // Default to standard output
+            try {
+                // Check if output redirection is needed
+                if (commandData.redirectFile != null) {
+                    // Open a FileOutputStream in append or overwrite mode based on the `append` flag
+                    FileOutputStream fos = new FileOutputStream(commandData.redirectFile, commandData.append);
+                    printStream = new PrintStream(fos);
+                }
+
+                // Execute the command, redirecting output as necessary
+                run = executeCommand(commandData, printStream);
+            } catch (IOException e) {
+                System.out.println("Error with redirection: " + e.getMessage());
+            } finally {
+                // Close the PrintStream if it’s not System.out
+                if (printStream != System.out) {
+                    printStream.close();
+                }
+            }
         }
+        System.out.println("Exiting..");
+        scanner.close();
     }
-    public void executeCommand(CommandData commandData, Scanner scanner){
+
+    public Boolean executeCommand(CommandData commandData,PrintStream printStream){
         
         switch (commandData.command) {
             case "mkdir":
                 String path =  MkdirCommand(commandData.parameters);
-                System.out.println(path);
+                printStream.println(path);
                 break;
             case "rm":
                 String output  =  RmCommand(commandData.parameters);
-                System.out.println(output);
+                printStream.println(output);
                 break;
             case "ls":
                 String out =  LsCommand(commandData.parameters);
-                System.out.println(out);
+                printStream.println(out);
                 break;
             case "cd":
                 String help = CdCommand(commandData.parameters);
-                System.out.println(help);
+                printStream.println(help);
                 break;   
             case "rmdir":
                 String result = RmdirCommand(commandData.parameters);
-                System.out.println(result);
+                printStream.println(result);
                 break;   
             case "pwd":
             {
-                String any = pwd();
-                System.out.println(any);
+                printStream.println(pwd());
                 break;   
             }  
             case "cat":
             {
-                String any = commandData.parameters.length > 0 ? commandData.parameters[0]:null;
-                cat(any).forEach(System.out::println);
+                String filePath = commandData.parameters.length > 0 ? commandData.parameters[0]:null;
+                try (Stream<String> lines = cat(filePath)) {
+                    lines.forEach(printStream::println);
+                } catch (Exception e) {
+                    System.out.println("Error processing file: " + e.getMessage());
+                }
                 break;
             }
             case "exit":
-                ExitCommand(scanner);
-
-                return;
+                return false;
             default:
-                System.out.println("Command " + commandData.command + " not found.");
+            printStream.println("Command " + commandData.command + " not found.");
         }
-        System.out.print(pwd() + "> ");
+        return true;
     }
+
     public String pwd(){
         return System.getProperty("user.dir");
     }
+
     public Stream<String> cat(String path) {
         if (path == null) {
             return Stream.of("Usage: cat <file_path>");
@@ -215,13 +255,6 @@ public class CommandLineInterpeter {
         }
     }
 
-
-    public void ExitCommand(Scanner scanner){
-        System.out.println("Exiting..");
-        scanner.close();
-        System.exit(0);
-
-    };
 
     public String CdCommand(String[] args) {
         if (args.length < 1) {

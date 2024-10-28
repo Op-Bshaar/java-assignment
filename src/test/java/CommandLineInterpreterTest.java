@@ -1,13 +1,19 @@
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.nio.file.Paths;
 
-import org.example.CommandLineInterpeter;
+import org.example.CommandLineInterpreter;
 
-public class CommandLineInterpeterTest {
+public class CommandLineInterpreterTest {
     
-    private final CommandLineInterpeter cmd = new CommandLineInterpeter();
+    private CommandLineInterpreter cmd;
+
+    @BeforeEach
+    public void setUp() {
+        cmd = new CommandLineInterpreter();
+    }
 
     @Test
     public  void testPwd(){

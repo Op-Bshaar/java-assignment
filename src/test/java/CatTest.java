@@ -7,12 +7,19 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.example.CommandLineInterpeter;
+import org.example.CommandLineInterpreter;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class CatTest {
     
-    private final CommandLineInterpeter cmd = new CommandLineInterpeter();
+    private CommandLineInterpreter cmd;
+
+    @BeforeEach
+    public void setUp() {
+        cmd = new CommandLineInterpreter();
+    }
+
      @Test
     public void testCatWithExistingFile() throws IOException{
         Path testFile = Files.createTempFile("testFile", ".txt");
