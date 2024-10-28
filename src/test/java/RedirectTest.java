@@ -15,16 +15,16 @@ public class RedirectTest {
     @Test
     public void testOutputRedirectionToFile() throws IOException {
         String command = "echo Hello, World! > testOutput.txt";
-        executeAndVerifyOutput(command, "testOutput.txt", "Hello, World!\n");
+        executeAndVerifyOutput(command, "testOutput.txt", "Hello, World!" + System.lineSeparator());
     }
 
     @Test
     public void testAppendRedirectionToFile() throws IOException {
         String initialCommand = "echo First line > testAppend.txt";
         String appendCommand = "echo Second line >> testAppend.txt";
-        
-        executeAndVerifyOutput(initialCommand, "testAppend.txt", "First line\n");
-        executeAndVerifyOutput(appendCommand, "testAppend.txt", "First line\nSecond line\n");
+
+        executeAndVerifyOutput(initialCommand, "testAppend.txt", "First line" + System.lineSeparator());
+        executeAndVerifyOutput(appendCommand, "testAppend.txt", "First line"+ System.lineSeparator() + "Second line"+ System.lineSeparator());
     }
 
     @AfterEach
@@ -34,9 +34,9 @@ public class RedirectTest {
     }
 
     private void executeAndVerifyOutput(String command, String fileName, String expectedContent) throws IOException {
-        // Run command
-       // cmd.runCommandLine(command);
-        
+
+        // Run the command
+        cmd.executeCommand(command);
         // Verify file content
         String content = Files.readString(Path.of(fileName));
         Assertions.assertEquals(expectedContent, content);

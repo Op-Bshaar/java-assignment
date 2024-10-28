@@ -1,4 +1,5 @@
 package org.example;
+
 import java.nio.file.attribute.BasicFileAttributes;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -14,119 +15,134 @@ import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
+
 public class CommandLineInterpreter {
-    
+
     private class CommandData {
         private String command;
         private String[] parameters;
-        private String redirectFile = null; 
-        private boolean append = false;  
+        private String redirectFile = null;
+        private boolean append = false;
+
         private CommandData(String commandInput) {
-        Pattern pattern = Pattern.compile("\"([^\"]*)\"|\\S+");
-        Matcher matcher = pattern.matcher(commandInput);
-        ArrayList<String> partsList = new ArrayList<>();
-        while (matcher.find()) {
-            if (matcher.group(1) != null) {
-                partsList.add(matcher.group(1));
-            } else {
-                partsList.add(matcher.group());
+            Pattern pattern = Pattern.compile("\"([^\"]*)\"|\\S+");
+            Matcher matcher = pattern.matcher(commandInput);
+            ArrayList<String> partsList = new ArrayList<>();
+            while (matcher.find()) {
+                if (matcher.group(1) != null) {
+                    partsList.add(matcher.group(1));
+                } else {
+                    partsList.add(matcher.group());
+                }
             }
+
+            for (int i = 0; i < partsList.size(); i++) {
+                String part = partsList.get(i);
+                if (part.equals(">") || part.equals(">>")) {
+                    this.redirectFile = partsList.get(i + 1); // file to redirect output
+                    this.append = part.equals(">>"); // append if `>>` is used
+                    partsList = new ArrayList<>(partsList.subList(0, i)); // Remove redirection from command
+                    break;
+                }
+            }
+
+            this.command = partsList.get(0);
+            this.parameters = partsList.size() > 1 ? partsList.subList(1, partsList.size()).toArray(new String[0])
+                    : new String[0];
         }
 
-        for (int i = 0; i < partsList.size(); i++) {
-            String part = partsList.get(i);
-            if (part.equals(">") || part.equals(">>")) {
-                this.redirectFile = partsList.get(i + 1);  // file to redirect output
-                this.append = part.equals(">>");           // append if `>>` is used
-                partsList = new ArrayList<>(partsList.subList(0, i));  // Remove redirection from command
-                break;
-            }
-        }
-        
-        this.command = partsList.get(0);
-        this.parameters = partsList.size() > 1 ? partsList.subList(1, partsList.size()).toArray(new String[0]) : new String[0];
     }
-    
-    }
-    public void runCommandLine(){
-        
+
+    public void runCommandLine() {
+
         Scanner scanner = new Scanner(System.in);
         boolean run = true;
         while (run) {
             System.out.print(pwd() + "> ");
-            String commandIn = scanner.nextLine().trim();
-            CommandData commandData = new CommandData(commandIn);
-            PrintStream printStream = System.out; // Default to standard output
-            try {
-                // Check if output redirection is needed
-                if (commandData.redirectFile != null) {
-                    // Open a FileOutputStream in append or overwrite mode based on the `append` flag
-                    FileOutputStream fos = new FileOutputStream(commandData.redirectFile, commandData.append);
-                    printStream = new PrintStream(fos);
-                }
-
-                // Execute the command, redirecting output as necessary
-                run = executeCommand(commandData, printStream);
-            } catch (IOException e) {
-                System.out.println("Error with redirection: " + e.getMessage());
-            } finally {
-                // Close the PrintStream if it’s not System.out
-                if (printStream != System.out) {
-                    printStream.close();
-                }
-            }
+            String command = scanner.nextLine().trim();
+            run = executeCommand(command);
         }
         System.out.println("Exiting..");
         scanner.close();
     }
-    
-    public Boolean executeCommand(CommandData commandData,PrintStream printStream){
-        
+
+    public Boolean executeCommand(String command) {
+        Boolean run = false;
+        CommandData commandData = new CommandData(command);
+        PrintStream printStream = System.out; // Default to standard output
+        try {
+            // Check if output redirection is needed
+            if (commandData.redirectFile != null) {
+                // Open a FileOutputStream in append or overwrite mode based on the `append`
+                // flag
+                FileOutputStream fos = new FileOutputStream(commandData.redirectFile, commandData.append);
+                printStream = new PrintStream(fos);
+            }
+
+            // Execute the command, redirecting output as necessary
+            run = executeCommand(commandData, printStream);
+        } catch (IOException e) {
+            System.out.println("Error with redirection: " + e.getMessage());
+        } finally {
+            // Close the PrintStream if it’s not System.out
+            if (printStream != System.out) {
+                printStream.close();
+            }
+        }
+        return run;
+    }
+
+    public Boolean executeCommand(CommandData commandData, PrintStream printStream) {
+
         switch (commandData.command) {
             case "mkdir":
-                String path =  MkdirCommand(commandData.parameters);
+                String path = MkdirCommand(commandData.parameters);
                 printStream.println(path);
                 break;
             case "rm":
-                String output  =  RmCommand(commandData.parameters);
+                String output = RmCommand(commandData.parameters);
                 printStream.println(output);
                 break;
             case "ls":
-                String out =  LsCommand(commandData.parameters);
+                String out = LsCommand(commandData.parameters);
                 printStream.println(out);
                 break;
             case "cd":
                 String help = CdCommand(commandData.parameters);
                 printStream.println(help);
-                break;   
+                break;
             case "rmdir":
                 String result = RmdirCommand(commandData.parameters);
                 printStream.println(result);
-                break;   
-            case "pwd":
-            {
+                break;
+            case "pwd": {
                 printStream.println(pwd());
-                break;   
-            }  
-            case "cat":
-            {
-                String filePath = commandData.parameters.length > 0 ? commandData.parameters[0]:null;
+                break;
+            }
+            case "cat": {
+                String filePath = commandData.parameters.length > 0 ? commandData.parameters[0] : null;
                 try (Stream<String> lines = cat(filePath)) {
                     lines.forEach(printStream::println);
                 } catch (Exception e) {
-                    System.out.println("Error processing file: " + e.getMessage());
+                    printStream.println("Error processing file: " + e.getMessage());
                 }
                 break;
             }
+            case "echo":
+                String message = commandData.parameters.length > 0
+                        ? String.join(" ", commandData.parameters)
+                        : "Usage: echo <message>";
+                printStream.println(message);
+                break;
             case "exit":
                 return false;
             default:
-            printStream.println("Command " + commandData.command + " not found.");
+                printStream.println("Command " + commandData.command + " not found.");
         }
         return true;
     }
 
-    public String pwd(){
+    public String pwd() {
         return System.getProperty("user.dir");
     }
 
@@ -134,7 +150,7 @@ public class CommandLineInterpreter {
         if (path == null) {
             return Stream.of("Usage: cat <file_path>");
         }
-    
+
         Path filePath = Path.of(path);
         if (Files.isDirectory(filePath)) {
             return Stream.of("cat: " + path + " is a directory, not a file!");
@@ -143,7 +159,7 @@ public class CommandLineInterpreter {
         else if (!Files.exists(filePath)) {
             return Stream.of("cat: " + path + " does not exist!");
         }
-        
+
         try {
             return Files.lines(filePath);
         } catch (IOException e) {
@@ -151,48 +167,45 @@ public class CommandLineInterpreter {
         }
     }
 
-    //bashar command
+    // bashar command
 
-    public String MkdirCommand(String[] args){
+    public String MkdirCommand(String[] args) {
 
+        if (args.length < 1) {
+            return "Usage: mkdir <directory_name>";
+        }
 
-            if (args.length < 1) {
-                return "Usage: mkdir <directory_name>";
-            }
-
-            Path dirPath = Paths.get(args[0]);
-            try {
-                Files.createDirectories(dirPath);
-                return "Directory created: " + dirPath.toAbsolutePath();
-            } catch (IOException e) {
-                return "Error creating directory: " + e.getMessage();
-            }
+        Path dirPath = Paths.get(args[0]);
+        try {
+            Files.createDirectories(dirPath);
+            return "Directory created: " + dirPath.toAbsolutePath();
+        } catch (IOException e) {
+            return "Error creating directory: " + e.getMessage();
+        }
 
     };
 
-    public  String RmCommand(String[] args){
+    public String RmCommand(String[] args) {
 
-            if (args.length < 1) {
-                return "Usage: rm <file_or_directory_name>";
-            }
-            Path rmPath = Paths.get(args[0]);
+        if (args.length < 1) {
+            return "Usage: rm <file_or_directory_name>";
+        }
+        Path rmPath = Paths.get(args[0]);
 
-            try{
-                if (Files.isDirectory(rmPath)) {
-                    Files.deleteIfExists(rmPath);
-                    return "Directory deleted: " + rmPath.toAbsolutePath();
-                }else if (Files.isRegularFile(rmPath)) {
-                    Files.deleteIfExists(rmPath);
-                    return "File deleted: " + rmPath.toAbsolutePath();
-                }
-                else{
-                    return "not found and file or directory";
-                }
+        try {
+            if (Files.isDirectory(rmPath)) {
+                Files.deleteIfExists(rmPath);
+                return "Directory deleted: " + rmPath.toAbsolutePath();
+            } else if (Files.isRegularFile(rmPath)) {
+                Files.deleteIfExists(rmPath);
+                return "File deleted: " + rmPath.toAbsolutePath();
+            } else {
+                return "not found and file or directory";
+            }
 
-            }
-            catch (IOException e) {
-                return "Error deleting file or directory: " + e.getMessage();
-            }
+        } catch (IOException e) {
+            return "Error deleting file or directory: " + e.getMessage();
+        }
 
     };
 
@@ -203,14 +216,12 @@ public class CommandLineInterpreter {
         listingOutput.append(String.format("%-5s %-20s %10s %s\n", "Mode", "LastWriteTime", "Length", "Name"));
         listingOutput.append("------------------------------------------------------------\n");
 
-
-
-        //Directory Stream to Iterate Through Files
+        // Directory Stream to Iterate Through Files
 
         try (DirectoryStream<Path> stream = Files.newDirectoryStream(currentDir)) {
 
             for (Path entry : stream) {
-               // Loop Through Files and Get File Attributes
+                // Loop Through Files and Get File Attributes
 
                 BasicFileAttributes attrs = Files.readAttributes(entry, BasicFileAttributes.class);
 
@@ -231,7 +242,6 @@ public class CommandLineInterpreter {
 
         return listingOutput.toString();
     }
-
 
     public String RmdirCommand(String[] args) {
         if (args.length < 1) {
@@ -255,7 +265,6 @@ public class CommandLineInterpreter {
         }
     }
 
-
     public String CdCommand(String[] args) {
         if (args.length < 1) {
             return "Usage: cd <directory_name>";
@@ -273,7 +282,8 @@ public class CommandLineInterpreter {
 
         // Resolve relative paths correctly (e.g., ".." to go up a directory)
         try {
-            Path newDir = targetPath.isAbsolute() ? targetPath : Paths.get(System.getProperty("user.dir")).resolve(targetPath).normalize();
+            Path newDir = targetPath.isAbsolute() ? targetPath
+                    : Paths.get(System.getProperty("user.dir")).resolve(targetPath).normalize();
 
             // Check if the directory exists and is a directory
             if (Files.exists(newDir) && Files.isDirectory(newDir)) {
@@ -287,7 +297,4 @@ public class CommandLineInterpreter {
             return "Error changing directory: " + e.getMessage();
         }
     }
-
 }
-
-
