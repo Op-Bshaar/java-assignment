@@ -6,8 +6,6 @@
   <component name="ChangeListManager">
     <list default="true" id="151847c1-7162-4c99-a354-f4ae650dd19b" name="Changes" comment="j">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/CommandLineInterpreter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/CommandLineInterpreter.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/CommandLineInterpreterTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/CommandLineInterpreterTest.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -34,22 +32,22 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Application.Main.executor": "Run",
-    "JUnit.CommandLineInterpeterTest.TestRm.executor": "Run",
-    "JUnit.CommandLineInterpeterTest.testmkdir.executor": "Run",
-    "JUnit.MkdirTest.executor": "Run",
-    "JUnit.RmTest.TestRm.executor": "Run",
-    "JUnit.RmTest.executor": "Run",
-    "JUnit.TestBashar.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "git-widget-placeholder": "main",
-    "kotlin-language-version-configured": "true",
-    "onboarding.tips.debug.path": "C:/Users/Abdallah/Desktop/java-assingmet/src/main/java/org/example/Main.java"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Application.Main.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.CommandLineInterpeterTest.TestRm.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.CommandLineInterpeterTest.testmkdir.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.MkdirTest.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.RmTest.TestRm.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.RmTest.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.TestBashar.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;onboarding.tips.debug.path&quot;: &quot;C:/Users/Abdallah/Desktop/java-assingmet/src/main/java/org/example/Main.java&quot;
   }
-}]]></component>
+}</component>
   <component name="RunManager">
     <configuration name="CommandLineInterpeterTest.TestRm" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="java-assingmet" />
@@ -212,7 +210,15 @@
       <option name="project" value="LOCAL" />
       <updated>1730182987396</updated>
     </task>
-    <option name="localTasksCounter" value="14" />
+    <task id="LOCAL-00014" summary="j">
+      <option name="closed" value="true" />
+      <created>1730218488011</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1730218488012</updated>
+    </task>
+    <option name="localTasksCounter" value="15" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">

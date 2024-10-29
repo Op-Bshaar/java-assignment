@@ -18,7 +18,7 @@ public class RmTest {
 
     @Test
     public void TestRm(){
-        String result = cmd.RmCommand(new String[] {"bashar"});
-        assertEquals("Directory deleted: " + Paths.get("bashar").toAbsolutePath(), result);
+        String result = cmd.RmCommand(new String[] {"ali"});
+        assertEquals("Directory deleted: " + Paths.get("ali").toAbsolutePath(), result);
     }
 }
