@@ -1,28 +1,26 @@
-import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-
-import org.example.CommandLineInterpeter;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class CommandLineInterpeterTest {
-    
-    private final CommandLineInterpeter cmd = new CommandLineInterpeter();
+import org.example.CommandLineInterpreter;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-    @Test
-    public  void testPwd(){
-        String output = cmd.pwd();
-        String expectedOutput = System.getProperty("user.dir");
-        assertEquals(output, expectedOutput);
-    }
+public class CatTest {
     
-    @Test
+    private CommandLineInterpreter cmd;
+
+    @BeforeEach
+    public void setUp() {
+        cmd = new CommandLineInterpreter();
+    }
+
+     @Test
     public void testCatWithExistingFile() throws IOException{
         Path testFile = Files.createTempFile("testFile", ".txt");
         Files.writeString(testFile, "Hello, World!\nThis is a test file.");
@@ -54,25 +52,5 @@ public class CommandLineInterpeterTest {
         } finally {
             Files.deleteIfExists(tempDir);
         }
-    }
-
-   @Test
-    public void testmkdir(){
-       String result = cmd.MkdirCommand(new String[] {"bashar"});
-       assertEquals("Directory created: " + Paths.get("bashar").toAbsolutePath(), result);
-    }
- @Test
-   public void testLs(){
-        String result = cmd.MkdirCommand(new String[] {"bashar"});
-  }
- @Test
-    public void TestRm(){
-        String result = cmd.RmCommand(new String[] {"bashar"});
-        assertEquals("Directory deleted: " + Paths.get("bashar").toAbsolutePath(), result);
-    }
-  @Test
-    public  void TestExit(){
-//      String result = cmd.ExitCommand(Scanner scanner);
-//      assertEquals("Directory deleted: " + Paths.get("bashar").toAbsolutePath(), result);
     }
 }
