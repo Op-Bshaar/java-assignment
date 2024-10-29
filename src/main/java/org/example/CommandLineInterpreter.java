@@ -110,14 +110,18 @@ public class CommandLineInterpreter {
             case "ls":
                 String out = LsCommand(commandData.parameters);
                 printStream.println(out);
-                break;
+
+//            case "ls -r":
+//                String result = LsRCommand(commandData.parameters);
+//                printStream.println(result);
+//                break;
             case "cd":
                 String help = CdCommand(commandData.parameters);
                 printStream.println(help);
                 break;
             case "rmdir":
-                String result = RmdirCommand(commandData.parameters);
-                printStream.println(result);
+                String any = RmdirCommand(commandData.parameters);
+                printStream.println(any);
                 break;
             case "pwd": {
                 printStream.println(pwd());
@@ -246,6 +250,17 @@ public class CommandLineInterpreter {
 
         return listingOutput.toString();
     }
+
+
+//    public String LsRCommand(String[] args) {
+//        Path currentDir = Paths.get(".");
+//        StringBuilder listingOutput = new StringBuilder("\n");
+//
+//    }
+//
+//    private void listFunction(){
+//
+//    }
 
     public String RmdirCommand(String[] args) {
         if (args.length < 1) {
