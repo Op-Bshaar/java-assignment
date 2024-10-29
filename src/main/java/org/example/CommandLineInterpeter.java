@@ -58,12 +58,17 @@ public class CommandLineInterpeter {
                 String out =  LsCommand(commandData.parameters);
                 System.out.println(out);
                 break;
+
+            case "ls -r":
+                String result =  LsRCommand(commandData.parameters);
+                System.out.println(result);
+                break;
             case "cd":
                 String help = CdCommand(commandData.parameters);
                 System.out.println(help);
             case "rmdir":
-                String result = RmdirCommand(commandData.parameters);
-                System.out.println(result);
+                String resultt = RmdirCommand(commandData.parameters);
+                System.out.println(resultt);
             case "pwd":
             {
                 String any = pwd();
@@ -189,6 +194,47 @@ public class CommandLineInterpeter {
 
         return listingOutput.toString();
     }
+
+    public String LsRCommand(String[] args) {
+        Path currentDir = Paths.get(".");
+        StringBuilder listingOutput = new StringBuilder();
+        listingOutput.append("Directory: ").append(currentDir.toAbsolutePath()).append("\n\n");
+        listingOutput.append(String.format("%-5s %-20s %10s %s\n", "Mode", "LastWriteTime", "Length", "Name"));
+        listingOutput.append("------------------------------------------------------------\n");
+
+        // Start the recursive listing
+        listDirectoryRecursively(currentDir, listingOutput, 0);
+
+        return listingOutput.toString();
+    }
+
+    private void listDirectoryRecursively(Path dir, StringBuilder output, int level) {
+        try (DirectoryStream<Path> stream = Files.newDirectoryStream(dir)) {
+            for (Path entry : stream) {
+                BasicFileAttributes attrs = Files.readAttributes(entry, BasicFileAttributes.class);
+
+                // Indentation based on directory level
+                String indent = " ".repeat(level * 4);
+
+                String type = attrs.isDirectory() ? "d----" : "-a---";
+                String lastModifiedTime = new SimpleDateFormat("MM/dd/yyyy hh:mm a")
+                        .format(new Date(attrs.lastModifiedTime().toMillis()));
+                long size = attrs.size();
+                String fileName = entry.getFileName().toString();
+
+                // Append formatted entry to output
+                output.append(String.format("%s%-5s %-20s %10d %s\n", indent, type, lastModifiedTime, size, fileName));
+
+                // If the entry is a directory, list its contents recursively
+                if (attrs.isDirectory()) {
+                    listDirectoryRecursively(entry, output, level + 1);
+                }
+            }
+        } catch (IOException e) {
+            output.append("Error listing contents: ").append(e.getMessage()).append("\n");
+        }
+    }
+
 
 
     public String RmdirCommand(String[] args) {
