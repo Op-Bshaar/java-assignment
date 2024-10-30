@@ -3,6 +3,7 @@ package org.example;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
@@ -11,6 +12,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -108,13 +110,25 @@ public class CommandLineInterpreter {
                 printStream.println(output);
                 break;
             case "ls":
+            boolean flag= false;
+            for(String param: commandData.parameters)
+            {
+                if(param.equals("-r"))
+                {
+                    flag=true;
+                }
+                
+            }
+            if(flag==true)
+            {
+                String result = LsRCommand(commandData.parameters);
+                printStream.println(result);
+            }
+            else{
                 String out = LsCommand(commandData.parameters);
                 printStream.println(out);
-
-//            case "ls -r":
-//                String result = LsRCommand(commandData.parameters);
-//                printStream.println(result);
-//                break;
+            }
+            break;
             case "cd":
                 String help = CdCommand(commandData.parameters);
                 printStream.println(help);
@@ -252,15 +266,48 @@ public class CommandLineInterpreter {
     }
 
 
-//    public String LsRCommand(String[] args) {
-//        Path currentDir = Paths.get(".");
-//        StringBuilder listingOutput = new StringBuilder("\n");
-//
-//    }
-//
-//    private void listFunction(){
-//
-//    }
+    public String LsRCommand(String[] args) {
+        List<Path> rev= new ArrayList<>();
+        Path currentDir = Paths.get(".");
+        StringBuilder listingOutput = new StringBuilder("\n");
+        listingOutput.append("Directory").append(currentDir.toString()).append("\n\n");
+        listingOutput.append(String.format("%-5s %-20s %10s %s\n", "Mode", "LastWriteTime", "Length", "Name"));
+        listingOutput.append("------------------------------------------------------------\n");
+
+        try(DirectoryStream<Path> stream =Files.newDirectoryStream(currentDir))
+        {
+            for(Path entry:stream)
+            {
+                rev.add(entry);
+            }
+            Collections.reverse(rev);
+            for (Path entry : rev) {
+                // Loop Through Files and Get File Attributes
+
+                BasicFileAttributes attrs = Files.readAttributes(entry, BasicFileAttributes.class);
+
+                String type = attrs.isDirectory() ? "d----" : "-a---";
+
+                String lastModifiedTime = new SimpleDateFormat("MM/dd/yyyy hh:mm a")
+                        .format(new Date(attrs.lastModifiedTime().toMillis()));
+
+                long size = attrs.size();
+                String fileName = entry.getFileName().toString();
+
+                // Formatting the output
+                listingOutput.append(String.format("%-5s %-20s %10d %s\n", type, lastModifiedTime, size, fileName));
+            }
+        } catch (IOException e) {
+            return "Error listing contents: " + e.getMessage();
+        }
+        return listingOutput.toString();
+        }
+        
+    
+
+    private void listFunction(){
+
+    }
 
     public String RmdirCommand(String[] args) {
         if (args.length < 1) {
