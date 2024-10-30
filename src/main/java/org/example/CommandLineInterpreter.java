@@ -1,9 +1,12 @@
 package org.example;
 
 import java.nio.file.attribute.BasicFileAttributes;
+import java.nio.file.attribute.FileTime;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.util.Date;
 import java.util.List;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
@@ -168,6 +171,10 @@ public class CommandLineInterpreter {
                         ? String.join(" ", commandData.parameters)
                         : "Usage: echo <message>";
                 printStream.println(message);
+                break;
+            case "touch":
+            result = TouchCommand(commandData.parameters);
+            printStream.println(result);
                 break;
             case "exit":
                 return false;
@@ -344,7 +351,38 @@ public class CommandLineInterpreter {
             }
             return listingOutput.toString();
             }
-
+    public String TouchCommand(String[] args)
+    {
+        if(args.length<1)
+        {
+            return "usage: Touch <FileName>";
+        }
+        StringBuilder path= new StringBuilder();
+        Path dir = Paths.get(args[0]);
+        if(Files.exists(dir))
+        {
+            try{
+            Files.setLastModifiedTime(dir, FileTime.from(Instant.now()));
+            return "touched" + args[0];
+            }
+            catch(IOException e)
+            {
+                return "Error editing date: " + e.getMessage();
+            }
+        }
+        File newfile= new File(args[0]);
+        try{
+        newfile.createNewFile();
+        return "created file:" + args[0];
+        }
+        catch(IOException e)
+        {
+            return "Error creating new file:" + e.getMessage();
+        }
+        
+        
+    }
+    
     public String RmdirCommand(String[] args) {
         if (args.length < 1) {
             return "Usage: rmdir <directory_name>";
