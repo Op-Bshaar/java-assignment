@@ -110,24 +110,37 @@ public class CommandLineInterpreter {
                 printStream.println(output);
                 break;
             case "ls":
-            boolean flag= false;
+            Integer flag= 0;
             for(String param: commandData.parameters)
             {
                 if(param.equals("-r"))
                 {
-                    flag=true;
+                    flag=1;
+                }
+                else if(param.equals("-a"))
+                {
+                    flag=2;
                 }
                 
             }
-            if(flag==true)
+            String result;
+            switch(flag)
             {
-                String result = LsRCommand(commandData.parameters);
-                printStream.println(result);
+                
+                case 0:
+                    result = LsCommand(commandData.parameters);
+                    printStream.println(result);
+                break;
+                case 1:
+                    result = LsRCommand(commandData.parameters);
+                    printStream.println(result);
+                break;
+                case 2:
+                    result = LsACommand(commandData.parameters);
+                    printStream.println(result);
+                break;
             }
-            else{
-                String out = LsCommand(commandData.parameters);
-                printStream.println(out);
-            }
+
             break;
             case "cd":
                 String help = CdCommand(commandData.parameters);
@@ -244,9 +257,9 @@ public class CommandLineInterpreter {
 
             for (Path entry : stream) {
                 // Loop Through Files and Get File Attributes
-
+                if(Files.isHidden(entry)){continue;}
                 BasicFileAttributes attrs = Files.readAttributes(entry, BasicFileAttributes.class);
-
+                
                 String type = attrs.isDirectory() ? "d----" : "-a---";
 
                 String lastModifiedTime = new SimpleDateFormat("MM/dd/yyyy hh:mm a")
@@ -266,8 +279,7 @@ public class CommandLineInterpreter {
     }
 
 
-    public String LsRCommand(String[] args) {
-        List<Path> rev= new ArrayList<>();
+    public String LsACommand(String[] args) {
         Path currentDir = Paths.get(".");
         StringBuilder listingOutput = new StringBuilder("\n");
         listingOutput.append("Directory").append(currentDir.toString()).append("\n\n");
@@ -276,12 +288,7 @@ public class CommandLineInterpreter {
 
         try(DirectoryStream<Path> stream =Files.newDirectoryStream(currentDir))
         {
-            for(Path entry:stream)
-            {
-                rev.add(entry);
-            }
-            Collections.reverse(rev);
-            for (Path entry : rev) {
+            for (Path entry : stream) {
                 // Loop Through Files and Get File Attributes
 
                 BasicFileAttributes attrs = Files.readAttributes(entry, BasicFileAttributes.class);
@@ -290,10 +297,8 @@ public class CommandLineInterpreter {
 
                 String lastModifiedTime = new SimpleDateFormat("MM/dd/yyyy hh:mm a")
                         .format(new Date(attrs.lastModifiedTime().toMillis()));
-
                 long size = attrs.size();
                 String fileName = entry.getFileName().toString();
-
                 // Formatting the output
                 listingOutput.append(String.format("%-5s %-20s %10d %s\n", type, lastModifiedTime, size, fileName));
             }
@@ -303,7 +308,42 @@ public class CommandLineInterpreter {
         return listingOutput.toString();
         }
         
+        public String LsRCommand(String[] args) {
+            List<Path> rev= new ArrayList<>();
+            Path currentDir = Paths.get(".");
+            StringBuilder listingOutput = new StringBuilder("\n");
+            listingOutput.append("Directory").append(currentDir.toString()).append("\n\n");
+            listingOutput.append(String.format("%-5s %-20s %10s %s\n", "Mode", "LastWriteTime", "Length", "Name"));
+            listingOutput.append("------------------------------------------------------------\n");
     
+            try(DirectoryStream<Path> stream =Files.newDirectoryStream(currentDir))
+            {
+                for(Path entry:stream)
+                {
+                    rev.add(entry);
+                }
+                Collections.reverse(rev);
+                for (Path entry : rev) {
+                    // Loop Through Files and Get File Attributes
+    
+                    BasicFileAttributes attrs = Files.readAttributes(entry, BasicFileAttributes.class);
+    
+                    String type = attrs.isDirectory() ? "d----" : "-a---";
+    
+                    String lastModifiedTime = new SimpleDateFormat("MM/dd/yyyy hh:mm a")
+                            .format(new Date(attrs.lastModifiedTime().toMillis()));
+    
+                    long size = attrs.size();
+                    String fileName = entry.getFileName().toString();
+    
+                    // Formatting the output
+                    listingOutput.append(String.format("%-5s %-20s %10d %s\n", type, lastModifiedTime, size, fileName));
+                }
+            } catch (IOException e) {
+                return "Error listing contents: " + e.getMessage();
+            }
+            return listingOutput.toString();
+            }
 
     private void listFunction(){
 
