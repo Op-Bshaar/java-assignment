@@ -345,10 +345,6 @@ public class CommandLineInterpreter {
             return listingOutput.toString();
             }
 
-    private void listFunction(){
-
-    }
-
     public String RmdirCommand(String[] args) {
         if (args.length < 1) {
             return "Usage: rmdir <directory_name>";
