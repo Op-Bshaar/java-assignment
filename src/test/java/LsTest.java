@@ -57,66 +57,44 @@ public class LsTest {
     }
 
     @Test
-    public void testLs(){
+    public void testLs() throws IOException{
         // Expected output after running ls command without parameters
         String[] param= new String[1];
         param[0]= "";
         String output = cmd.LsCommand(param);
-        try{
         String expected=correctoutput(false,false);
         assertEquals(expected, output);
-        }
-        catch(IOException e)
-        {
-            
-        }
     
     }
     @Test
-    public void testLsR(){
+    public void testLsR() throws IOException{
         //testLsR
         String[] param= new String[1];
         param[0]= "-r";
         String output = cmd.LsCommand(param);
-        try{
+
             String expected=correctoutput(true,false);
             assertEquals(expected, output);
-            }
-            catch(IOException e)
-            {
-                
-            }
     }
     @Test
-    public void testLsA(){
+    public void testLsA() throws IOException{
         //testLsA
         String[] param= new String[1];
         param[0]= "-a";
         String output = cmd.LsCommand(param);
-        try{
             String expected=correctoutput(false,true);
             assertEquals(expected, output);
-            }
-            catch(IOException e)
-            {
-                
-            }
     }
     @Test
-    public void testLsAR(){
+    public void testLsAR() throws IOException{
         //testLsAR
         String[] param= new String[2];
         param[0]= "-a";
         param[1]="-r";
         String output = cmd.LsCommand(param);
-        try{
+
             String expected=correctoutput(true,true);
             assertEquals(expected, output);
-            }
-            catch(IOException e)
-            {
-                
-            }
     }
     
     private String correctoutput(boolean rev,boolean all) throws IOException {
