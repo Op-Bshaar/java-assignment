@@ -22,7 +22,7 @@ import java.util.stream.Stream;
 
 public class CommandLineInterpreter {
 
-    public void runCommandLine() throws IOException {
+    public void runCommandLine() {
 
         Scanner scanner = new Scanner(System.in);
         boolean run = true;
@@ -38,22 +38,19 @@ public class CommandLineInterpreter {
     private Boolean executeCommand(String command, PrintStream out) {
         Boolean run = false;
         CommandData commandData = new CommandData(command);
-        PrintStream printStream = out; // Default to standard output
+        PrintStream printStream = out;
         try {
             // Check if output redirection is needed
             if (commandData.getRedirectFile() != null) {
-                // Open a FileOutputStream in append or overwrite mode based on the `append`
-                // flag
-                FileOutputStream fos = new FileOutputStream(commandData.getRedirectFile(), commandData.isAppend());
-                printStream = new PrintStream(fos);
+                FileOutputStream fileOutputStream = new FileOutputStream(commandData.getRedirectFile(), commandData.isAppend());
+                printStream = new PrintStream(fileOutputStream);
             }
 
             // Execute the command, redirecting output as necessary
             run = executeCommand(commandData, printStream);
         } catch (IOException e) {
-            System.out.println("Error with redirection: " + e.getMessage());
+            out.println("Error with redirection: " + e.getMessage());
         } finally {
-            // Close the PrintStream if it’s not System.out
             if (printStream != out) {
                 printStream.close();
             }
@@ -61,7 +58,7 @@ public class CommandLineInterpreter {
         return run;
     }
 
-    public Boolean executeCommand(String command) throws IOException {
+    public Boolean executeCommand(String command){
         boolean run = true;
         final String[] commands = command.split("\\|");
         final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -80,7 +77,11 @@ public class CommandLineInterpreter {
             run = executeCommand(cmd, System.out);
         }
         printStream.close();
-        outputStream.close();
+        try {
+            outputStream.close();
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+        }
         return run;
     }
 
