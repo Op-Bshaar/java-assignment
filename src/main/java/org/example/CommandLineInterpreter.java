@@ -63,7 +63,7 @@ public class CommandLineInterpreter {
             return true;
         }
 
-        for (int i = 0; i < commands.length; i++) {
+        for (int i = 0; i < commands.length - 1; i++) {
             final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             final PrintStream printStream = new PrintStream(outputStream);
             CommandData commandData = new CommandData(commands[i] + " " + lastOutput);
@@ -80,7 +80,7 @@ public class CommandLineInterpreter {
                 return false;
             }
         }
-        CommandData commandData = new CommandData(commands[0] + " " + lastOutput);
+        CommandData commandData = new CommandData(commands[commands.length - 1] + " " + lastOutput);
         run = executeCommand(commandData, this.printStream);
         return run;
     }
