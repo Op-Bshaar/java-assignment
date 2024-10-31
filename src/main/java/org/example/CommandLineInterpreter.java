@@ -27,8 +27,15 @@ public class CommandLineInterpreter {
         boolean run = true;
         while (run) {
             System.out.print(pwd() + "> ");
-            String command = scanner.nextLine().trim();
-            run = executeCommand(command);
+            String input = scanner.nextLine().trim();
+            String[] commands = input.split("\\|");
+            String output = null;
+            for (String command : commands) {
+                run = executeCommand(command.trim());
+                if (!run) {
+                    break;
+                }
+            }
         }
         System.out.println("Exiting..");
         scanner.close();
@@ -62,6 +69,9 @@ public class CommandLineInterpreter {
 
     private Boolean executeCommand(CommandData commandData, PrintStream printStream) {
 
+        if (commandData.getCommand().equalsIgnoreCase("exit")) {
+            return false;
+        }
         switch (commandData.getCommand()) {
             case "mkdir":
                 String path = MkdirCommand(commandData.getFirstParameter());
@@ -115,7 +125,7 @@ public class CommandLineInterpreter {
             default:
                 printStream.println("Command " + commandData.getCommand() + " not found.");
         }
-        return  !commandData.getCommand().equalsIgnoreCase("exit");
+        return true;
     }
 
     public String pwd() {
@@ -366,30 +376,29 @@ public class CommandLineInterpreter {
 
     public String MvCommand(String[] args) {
 
-        if(args.length<2){
+        if (args.length < 2) {
             return "Usage: mv <source><destentaion>";
         }
         Path currntpath = Paths.get(args[0]);
         Path Newdirct = Paths.get(args[1]);
-        if(!currntpath.isAbsolute()){
-            currntpath=Paths.get(pwd(), args[0]).normalize();
+        if (!currntpath.isAbsolute()) {
+            currntpath = Paths.get(pwd(), args[0]).normalize();
         }
-        if(!Newdirct.isAbsolute()){
-            Newdirct=Paths.get(pwd(), args[1]).normalize();
+        if (!Newdirct.isAbsolute()) {
+            Newdirct = Paths.get(pwd(), args[1]).normalize();
         }
-        try{
-            if(!Files.exists(currntpath)){
+        try {
+            if (!Files.exists(currntpath)) {
                 return "no file or dircotry";
             }
-            if(Files.isDirectory(Newdirct)){
+            if (Files.isDirectory(Newdirct)) {
                 Newdirct = Newdirct.resolve(currntpath.getFileName());
             }
-            Files.move(currntpath,Newdirct);
-            return"move";
+            Files.move(currntpath, Newdirct);
+            return "move";
 
-        }
-        catch(IOException e){
-            return"error"+e.getMessage();
+        } catch (IOException e) {
+            return "error" + e.getMessage();
 
         }
 
