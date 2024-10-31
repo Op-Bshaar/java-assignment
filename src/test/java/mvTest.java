@@ -72,6 +72,30 @@ public class mvTest {
         assertEquals("no file or dircotry", result);
     }
 
+    @Test
+    public void testMoveFileWithAbsolutePath() throws IOException {
+        // Create a temporary file and a target directory
+        Path currentFile = Files.createTempFile("sourceFile", ".txt");
+        Path targetDir = Files.createTempDirectory("targetDir");
+
+        // Use absolute paths for the test
+        Path absoluteCurrentFilePath = currentFile.toAbsolutePath();
+        Path absoluteTargetDirPath = targetDir.toAbsolutePath();
+
+        // Test the mv command with absolute paths
+        String[] args = { absoluteCurrentFilePath.toString(), absoluteTargetDirPath.toString() };
+        String result = cmd.MvCommand(args);
+
+        // Assert the file was moved successfully
+        Path movedFilePath = absoluteTargetDirPath.resolve(currentFile.getFileName());
+        assertTrue(Files.exists(movedFilePath));
+        assertEquals("move", result);
+
+        // Clean up
+        Files.deleteIfExists(movedFilePath);
+        Files.deleteIfExists(targetDir);
+    }
+
     @AfterEach
     public void tearDown() {
         System.setProperty("user.dir", initialDir); // Restore the initial working directory if changed
