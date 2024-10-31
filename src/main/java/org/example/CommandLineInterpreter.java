@@ -273,7 +273,7 @@ public class CommandLineInterpreter {
         if (Files.exists(dir)) {
             try {
                 Files.setLastModifiedTime(dir, FileTime.from(Instant.now()));
-                return "touched" + args[0];
+                return "touched: " + args[0];
             } catch (IOException e) {
                 return "Error editing date: " + e.getMessage();
             }
