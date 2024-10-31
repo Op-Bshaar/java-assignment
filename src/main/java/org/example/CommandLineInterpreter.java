@@ -112,6 +112,10 @@ public class CommandLineInterpreter {
                 String output = RmCommand(commandData.parameters);
                 printStream.println(output);
                 break;
+            case "help":
+                String result = HelpCommand(commandData.parameters);
+                printStream.println(result);
+                
             case "ls":
             Integer flag= 0;
             for(String param: commandData.parameters)
@@ -226,6 +230,15 @@ public class CommandLineInterpreter {
         }
 
     };
+    public String HelpCommand(String []args){
+        System.out.println("mv[source dirc][target]");
+        System.out.println("mkdir[drict name]");
+        System.out.println("rdmir[dirct name]");
+        System.out.println("ls[options][file/dirct]");
+        System.out.println("rm[filename]");
+        System.out.println("");
+            
+    }
 
     public String RmCommand(String[] args) {
 
