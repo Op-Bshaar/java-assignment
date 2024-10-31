@@ -32,10 +32,12 @@ public class RmdirTest {
     @Test
     public void testRemoveNonEmptyDirectory() throws IOException {
         Path nonEmptyDir = Files.createTempDirectory("nonEmptyDirTest");
-        Files.createFile(nonEmptyDir.resolve("testFile.txt"));
+        Path file = Files.createFile(nonEmptyDir.resolve("testFile.txt"));
         String output = cmd.RmdirCommand(nonEmptyDir.toString());
         assertEquals("Directory is not empty: " + nonEmptyDir.toAbsolutePath(), output);
         assertTrue( Files.exists(nonEmptyDir), "Non-empty directory should not be deleted.");
+        Files.delete(file); 
+        Files.delete(nonEmptyDir); 
     }
 
     @Test
