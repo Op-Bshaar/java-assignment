@@ -28,9 +28,11 @@ public class CommandLineInterpreter {
         private String[] parameters;
         private String redirectFile = null;
         private boolean append = false;
-        private String getFirstParameter(){
+
+        private String getFirstParameter() {
             return parameters.length > 0 ? parameters[0] : null;
         }
+
         private CommandData(String commandInput) {
             Pattern pattern = Pattern.compile("\"([^\"]*)\"|\\S+");
             Matcher matcher = pattern.matcher(commandInput);
@@ -276,11 +278,12 @@ public class CommandLineInterpreter {
     }
 
     public String LsCommand() {
-        Path currentDir = Paths.get(".");
+        Path currentDir = Paths.get(pwd());
         StringBuilder listingOutput = new StringBuilder("\n");
-        listingOutput.append("Directory: ").append(currentDir.toAbsolutePath().toString()).append("\n\n");
+        listingOutput.append("Directory: ").append(currentDir.toAbsolutePath())
+        .append(System.lineSeparator()).append(System.lineSeparator());
         listingOutput.append(String.format("%-5s %-20s %10s %s\n", "Mode", "LastWriteTime", "Length", "Name"));
-        listingOutput.append("------------------------------------------------------------\n");
+        listingOutput.append("------------------------------------------------------------").append(System.lineSeparator());
 
         // Directory Stream to Iterate Through Files
 
@@ -312,7 +315,7 @@ public class CommandLineInterpreter {
     }
 
     public String LsACommand(String[] args) {
-        Path currentDir = Paths.get(".");
+        Path currentDir = Paths.get(pwd());
         StringBuilder listingOutput = new StringBuilder("\n");
         listingOutput.append("Directory").append(currentDir.toString()).append("\n\n");
         listingOutput.append(String.format("%-5s %-20s %10s %s\n", "Mode", "LastWriteTime", "Length", "Name"));
@@ -341,7 +344,7 @@ public class CommandLineInterpreter {
 
     public String LsRCommand(String[] args) {
         List<Path> rev = new ArrayList<>();
-        Path currentDir = Paths.get(".");
+        Path currentDir = Paths.get(pwd());
         StringBuilder listingOutput = new StringBuilder("\n");
         listingOutput.append("Directory").append(currentDir.toString()).append("\n\n");
         listingOutput.append(String.format("%-5s %-20s %10s %s\n", "Mode", "LastWriteTime", "Length", "Name"));
