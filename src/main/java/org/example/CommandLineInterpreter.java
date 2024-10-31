@@ -283,7 +283,7 @@ public class CommandLineInterpreter {
         if (Files.exists(dir)) {
             try {
                 Files.setLastModifiedTime(dir, FileTime.from(Instant.now()));
-                return "touched" + args[0];
+                return "touched: " + args[0];
             } catch (IOException e) {
                 return "Error editing date: " + e.getMessage();
             }
@@ -391,7 +391,10 @@ public class CommandLineInterpreter {
             if (!Files.exists(currntpath)) {
                 return "no file or dircotry";
             }
-            if (Files.isDirectory(Newdirct)) {
+            if(Files.isDirectory(Newdirct) && !Files.exists(Newdirct)){
+                Files.createDirectories(Newdirct);
+            }
+            if(Files.isDirectory(Newdirct)){
                 Newdirct = Newdirct.resolve(currntpath.getFileName());
             }
             Files.move(currntpath, Newdirct);
