@@ -179,6 +179,10 @@ public class CommandLineInterpreter {
             case "touch":
             result = TouchCommand(commandData.parameters);
             printStream.println(result);
+
+            case "move":
+                resultt=MvCommand(commandData.parameters);
+                printStream.println(resultt);
                 break;
             case "exit":
                 return false;
@@ -448,6 +452,16 @@ public class CommandLineInterpreter {
             }
         } catch (Exception e) {
             return "Error changing directory: " + e.getMessage();
+        }
+
+        public String MvCommand(String[]args){
+            Path currntdirct=Paths.get(args[0]);
+            Path Newdirct=Paths.get(args[1]);
+
+            File.move(currntdirct,Newdirct);
+            return "Moved";
+
+            
         }
     }
 }
