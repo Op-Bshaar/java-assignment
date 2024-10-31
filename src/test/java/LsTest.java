@@ -21,7 +21,6 @@ public class LsTest {
     private Path folderpath;
     @BeforeEach
     public void setUp() throws IOException {
-        String result="";
         cmd = new CommandLineInterpreter();
         // create directory
         // go to the new directory

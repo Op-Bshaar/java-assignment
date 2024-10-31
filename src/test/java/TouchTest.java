@@ -2,7 +2,9 @@ import org.example.CommandLineInterpreter;
 import org.junit.jupiter.api.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.nio.file.attribute.BasicFileAttributes;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -33,7 +35,7 @@ public class TouchTest {
     @Test
 
 
-    public void TouchTestExists()
+    public void TouchTestExists() throws IOException
     {
         //test if file exists
         String[] filename= new String[1];
@@ -49,7 +51,12 @@ public class TouchTest {
              result= e + "failed on TouchTestExists()";
         }
         assertEquals("touched: " + filename[0], result);
-        
+        BasicFileAttributes attr = Files.readAttributes(filepath, BasicFileAttributes.class);
+        long lastModifiedTime = attr.lastModifiedTime().toMillis();
+        long creationTime = attr.creationTime().toMillis();
+
+        // Ensure the last modified time is later than the creation time
+        assertTrue(lastModifiedTime >= creationTime);
     }
     public void TouchTestFolder()
     {
