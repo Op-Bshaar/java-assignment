@@ -4,7 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="151847c1-7162-4c99-a354-f4ae650dd19b" name="Changes" comment="mv" />
+    <list default="true" id="151847c1-7162-4c99-a354-f4ae650dd19b" name="Changes" comment="mv">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/mvTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/mvTest.java" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -30,36 +33,28 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Application.Main.executor&quot;: &quot;Run&quot;,
-    &quot;JUnit.CommandLineInterpeterTest.TestRm.executor&quot;: &quot;Run&quot;,
-    &quot;JUnit.CommandLineInterpeterTest.testmkdir.executor&quot;: &quot;Run&quot;,
-    &quot;JUnit.LsTest.executor&quot;: &quot;Run&quot;,
-    &quot;JUnit.LsTest.testLs.executor&quot;: &quot;Run&quot;,
-    &quot;JUnit.LsTest.testLsCommand.executor&quot;: &quot;Run&quot;,
-    &quot;JUnit.MkdirTest.executor&quot;: &quot;Run&quot;,
-    &quot;JUnit.RmTest.TestRm.executor&quot;: &quot;Run&quot;,
-    &quot;JUnit.RmTest.executor&quot;: &quot;Run&quot;,
-    &quot;JUnit.TestBashar.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;onboarding.tips.debug.path&quot;: &quot;C:/Users/Abdallah/Desktop/java-assingmet/src/main/java/org/example/Main.java&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Application.Main.executor": "Run",
+    "JUnit.CommandLineInterpeterTest.TestRm.executor": "Run",
+    "JUnit.CommandLineInterpeterTest.testmkdir.executor": "Run",
+    "JUnit.LsTest.executor": "Run",
+    "JUnit.LsTest.testLs.executor": "Run",
+    "JUnit.LsTest.testLsCommand.executor": "Run",
+    "JUnit.MkdirTest.executor": "Run",
+    "JUnit.RmTest.TestRm.executor": "Run",
+    "JUnit.RmTest.executor": "Run",
+    "JUnit.TestBashar.executor": "Run",
+    "JUnit.mvTest.testMoveFileToExistingDirectory.executor": "Run",
+    "JUnit.mvTest.testMoveFileToNonExistingDirectory.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "git-widget-placeholder": "main",
+    "kotlin-language-version-configured": "true",
+    "onboarding.tips.debug.path": "C:/Users/Abdallah/Desktop/java-assingmet/src/main/java/org/example/Main.java"
   }
-}</component>
-  <component name="RunManager">
-    <configuration name="CommandLineInterpeterTest.testmkdir" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
-      <module name="java-assingmet" />
-      <option name="PACKAGE_NAME" value="" />
-      <option name="MAIN_CLASS_NAME" value="CommandLineInterpeterTest" />
-      <option name="METHOD_NAME" value="testmkdir" />
-      <option name="TEST_OBJECT" value="method" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
+}]]></component>
+  <component name="RunManager" selected="JUnit.mvTest.testMoveFileToNonExistingDirectory">
     <configuration name="LsTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="java-assingmet" />
       <option name="PACKAGE_NAME" value="" />
@@ -89,11 +84,21 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="RmTest.TestRm" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+    <configuration name="mvTest.testMoveFileToExistingDirectory" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="java-assingmet" />
       <option name="PACKAGE_NAME" value="" />
-      <option name="MAIN_CLASS_NAME" value="RmTest" />
-      <option name="METHOD_NAME" value="TestRm" />
+      <option name="MAIN_CLASS_NAME" value="mvTest" />
+      <option name="METHOD_NAME" value="testMoveFileToExistingDirectory" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="mvTest.testMoveFileToNonExistingDirectory" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="java-assingmet" />
+      <option name="PACKAGE_NAME" value="" />
+      <option name="MAIN_CLASS_NAME" value="mvTest" />
+      <option name="METHOD_NAME" value="testMoveFileToNonExistingDirectory" />
       <option name="TEST_OBJECT" value="method" />
       <method v="2">
         <option name="Make" enabled="true" />
@@ -101,11 +106,11 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="JUnit.mvTest.testMoveFileToNonExistingDirectory" />
+        <item itemvalue="JUnit.mvTest.testMoveFileToExistingDirectory" />
         <item itemvalue="JUnit.LsTest" />
         <item itemvalue="JUnit.LsTest.testLsCommand" />
         <item itemvalue="JUnit.LsTest.testLs" />
-        <item itemvalue="JUnit.RmTest.TestRm" />
-        <item itemvalue="JUnit.CommandLineInterpeterTest.testmkdir" />
       </list>
     </recent_temporary>
   </component>
@@ -286,7 +291,15 @@
       <option name="project" value="LOCAL" />
       <updated>1730388782731</updated>
     </task>
-    <option name="localTasksCounter" value="22" />
+    <task id="LOCAL-00022" summary="mv">
+      <option name="closed" value="true" />
+      <created>1730388864598</created>
+      <option name="number" value="00022" />
+      <option name="presentableId" value="LOCAL-00022" />
+      <option name="project" value="LOCAL" />
+      <updated>1730388864598</updated>
+    </task>
+    <option name="localTasksCounter" value="23" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
