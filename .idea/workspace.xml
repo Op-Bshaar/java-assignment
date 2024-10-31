@@ -4,11 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="151847c1-7162-4c99-a354-f4ae650dd19b" name="Changes" comment="rm">
+    <list default="true" id="151847c1-7162-4c99-a354-f4ae650dd19b" name="Changes" comment="tttt">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bashar/f.txt" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/example/CommandLineInterpreter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/CommandLineInterpreter.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/LsTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/LsTest.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -35,26 +33,26 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Application.Main.executor": "Run",
-    "JUnit.CommandLineInterpeterTest.TestRm.executor": "Run",
-    "JUnit.CommandLineInterpeterTest.testmkdir.executor": "Run",
-    "JUnit.LsTest.executor": "Run",
-    "JUnit.LsTest.testLs.executor": "Run",
-    "JUnit.LsTest.testLsCommand.executor": "Run",
-    "JUnit.MkdirTest.executor": "Run",
-    "JUnit.RmTest.TestRm.executor": "Run",
-    "JUnit.RmTest.executor": "Run",
-    "JUnit.TestBashar.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "git-widget-placeholder": "main",
-    "kotlin-language-version-configured": "true",
-    "onboarding.tips.debug.path": "C:/Users/Abdallah/Desktop/java-assingmet/src/main/java/org/example/Main.java"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Application.Main.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.CommandLineInterpeterTest.TestRm.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.CommandLineInterpeterTest.testmkdir.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.LsTest.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.LsTest.testLs.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.LsTest.testLsCommand.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.MkdirTest.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.RmTest.TestRm.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.RmTest.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.TestBashar.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;onboarding.tips.debug.path&quot;: &quot;C:/Users/Abdallah/Desktop/java-assingmet/src/main/java/org/example/Main.java&quot;
   }
-}]]></component>
-  <component name="RunManager" selected="JUnit.LsTest">
+}</component>
+  <component name="RunManager">
     <configuration name="CommandLineInterpeterTest.testmkdir" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="java-assingmet" />
       <option name="PACKAGE_NAME" value="" />
@@ -243,7 +241,15 @@
       <option name="project" value="LOCAL" />
       <updated>1730222412336</updated>
     </task>
-    <option name="localTasksCounter" value="16" />
+    <task id="LOCAL-00016" summary="tttt">
+      <option name="closed" value="true" />
+      <created>1730294557447</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1730294557448</updated>
+    </task>
+    <option name="localTasksCounter" value="17" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -256,6 +262,7 @@
     <MESSAGE value="rmdir" />
     <MESSAGE value="j" />
     <MESSAGE value="rm" />
-    <option name="LAST_COMMIT_MESSAGE" value="rm" />
+    <MESSAGE value="tttt" />
+    <option name="LAST_COMMIT_MESSAGE" value="tttt" />
   </component>
 </project>

@@ -150,6 +150,10 @@ public class CommandLineInterpreter {
                 String any = RmdirCommand(commandData.parameters);
                 printStream.println(any);
                 break;
+            case "mv":
+                String reslut = RvCommand(commandData.parameters);
+                printStream.println(reslut);
+                break;
             case "pwd": {
                 printStream.println(pwd());
                 break;
@@ -366,6 +370,45 @@ public class CommandLineInterpreter {
             return "Error deleting directory: " + e.getMessage();
         }
     }
+
+    public String RvCommand(String[] args) {
+        if (args.length == 0) {
+            return "Error: No path specified.";
+        }
+
+        Path pathToRemove = Paths.get(args[0]);
+
+        // Check if the path exists
+        if (!Files.exists(pathToRemove)) {
+            return "Error: Path does not exist.";
+        }
+
+        try {
+            if (Files.isDirectory(pathToRemove)) {
+                // If it's a directory, delete it and all its contents
+                try (Stream<Path> paths = Files.walk(pathToRemove)) {
+                    paths.sorted(Collections.reverseOrder())
+                            .forEach(p -> {
+                                try {
+                                    Files.delete(p);
+                                } catch (IOException e) {
+                                    System.err.println("Error deleting file: " + p + " - " + e.getMessage());
+                                }
+                            });
+                }
+                Files.delete(pathToRemove);
+                return "Directory deleted: " + pathToRemove.toAbsolutePath();
+            } else {
+                // If it's a file, delete the file
+                Files.delete(pathToRemove);
+                return "File deleted: " + pathToRemove.toAbsolutePath();
+            }
+        } catch (IOException e) {
+            return "Error deleting: " + e.getMessage();
+        }
+    }
+
+
 
     public String CdCommand(String[] args) {
         if (args.length < 1) {
