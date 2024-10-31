@@ -1,5 +1,6 @@
 package org.example;
 
+import java.io.ByteArrayOutputStream;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileTime;
 import java.text.SimpleDateFormat;
@@ -29,22 +30,24 @@ public class CommandLineInterpreter {
             System.out.print(pwd() + "> ");
             String input = scanner.nextLine().trim();
             String[] commands = input.split("\\|");
-            String output = null;
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            PrintStream printStream = new PrintStream(outputStream);
             for (String command : commands) {
-                run = executeCommand(command.trim());
+                run = executeCommand(command.trim(), printStream);
                 if (!run) {
                     break;
                 }
             }
         }
+        
         System.out.println("Exiting..");
         scanner.close();
     }
 
-    public Boolean executeCommand(String command) {
+    public Boolean executeCommand(String command, PrintStream out) {
         Boolean run = false;
         CommandData commandData = new CommandData(command);
-        PrintStream printStream = System.out; // Default to standard output
+        PrintStream printStream = out; // Default to standard output
         try {
             // Check if output redirection is needed
             if (commandData.getRedirectFile() != null) {
@@ -60,14 +63,18 @@ public class CommandLineInterpreter {
             System.out.println("Error with redirection: " + e.getMessage());
         } finally {
             // Close the PrintStream if it’s not System.out
-            if (printStream != System.out) {
+            if (printStream != out) {
                 printStream.close();
             }
         }
         return run;
     }
 
-    private Boolean executeCommand(CommandData commandData, PrintStream printStream) {
+    public Boolean executeCommand(String command){
+        return executeCommand(command, System.out);
+    }
+
+    public Boolean executeCommand(CommandData commandData, PrintStream printStream) {
 
         if (commandData.getCommand().equalsIgnoreCase("exit")) {
             return false;
