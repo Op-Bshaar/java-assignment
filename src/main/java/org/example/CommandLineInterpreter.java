@@ -108,7 +108,7 @@ public class CommandLineInterpreter {
                 result = TouchCommand(commandData.getParameters());
                 printStream.println(result);
                 break;
-            case "move":
+            case "mر":
                 result = MvCommand(commandData.getParameters());
                 printStream.println(result);
                 break;
@@ -367,9 +367,33 @@ public class CommandLineInterpreter {
     }
 
     public String MvCommand(String[] args) {
-        // Path currntdirct = Paths.get(args[0]);
-        // Path Newdirct = Paths.get(args[1]);
-        return "Moved";
+
+        if(args.length<2){
+            return "Usage: mv <source><destentaion>";
+        }
+        Path currntpath = Paths.get(args[0]);
+        Path Newdirct = Paths.get(args[1]);
+        if(!currntpath.isAbsolute()){
+            currntpath=Paths.get(pwd(), args[0]).normalize();
+        }
+        if(!Newdirct.isAbsolute()){
+            Newdirct=Paths.get(pwd(), args[1]).normalize();
+        }
+        try{
+            if(!Files.exists(currntpath)){
+                return "no file or dircotry";
+            }
+            if(Files.isDirectory(Newdirct)){
+                Newdirct = Newdirct.resolve(currntpath.getFileName());
+            }
+            Files.move(currntpath,Newdirct);
+            return"move";
+
+        }
+        catch(IOException e){
+            return"error"+e.getMessage();
+
+        }
 
     }
 }
