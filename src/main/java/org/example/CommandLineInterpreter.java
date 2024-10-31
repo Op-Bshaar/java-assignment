@@ -22,29 +22,20 @@ import java.util.stream.Stream;
 
 public class CommandLineInterpreter {
 
-    public void runCommandLine() {
+    public void runCommandLine() throws IOException {
 
         Scanner scanner = new Scanner(System.in);
         boolean run = true;
         while (run) {
             System.out.print(pwd() + "> ");
-            String input = scanner.nextLine().trim();
-            String[] commands = input.split("\\|");
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            PrintStream printStream = new PrintStream(outputStream);
-            for (String command : commands) {
-                run = executeCommand(command.trim(), printStream);
-                if (!run) {
-                    break;
-                }
-            }
+            final String input = scanner.nextLine().trim();
+            run = executeCommand(input);
         }
-        
         System.out.println("Exiting..");
         scanner.close();
     }
 
-    public Boolean executeCommand(String command, PrintStream out) {
+    private Boolean executeCommand(String command, PrintStream out) {
         Boolean run = false;
         CommandData commandData = new CommandData(command);
         PrintStream printStream = out; // Default to standard output
@@ -70,8 +61,27 @@ public class CommandLineInterpreter {
         return run;
     }
 
-    public Boolean executeCommand(String command){
-        return executeCommand(command, System.out);
+    public Boolean executeCommand(String command) throws IOException {
+        boolean run = true;
+        final String[] commands = command.split("\\|");
+        final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        final PrintStream printStream = new PrintStream(outputStream);
+        String lastOutput = "";
+        for (int i = 0; i < commands.length - 1; i++) {
+            final String cmd = commands[i];
+            run = executeCommand(cmd + lastOutput, printStream);
+            lastOutput = " " + outputStream.toString();
+            if (!run) {
+                break;
+            }
+        }
+        if (commands.length > 0 && run) {
+            final String cmd = commands[commands.length - 1] + lastOutput;
+            run = executeCommand(cmd, System.out);
+        }
+        printStream.close();
+        outputStream.close();
+        return run;
     }
 
     public Boolean executeCommand(CommandData commandData, PrintStream printStream) {
@@ -398,10 +408,10 @@ public class CommandLineInterpreter {
             if (!Files.exists(currntpath)) {
                 return "no file or dircotry";
             }
-            if(Files.isDirectory(Newdirct) && !Files.exists(Newdirct)){
+            if (Files.isDirectory(Newdirct) && !Files.exists(Newdirct)) {
                 Files.createDirectories(Newdirct);
             }
-            if(Files.isDirectory(Newdirct)){
+            if (Files.isDirectory(Newdirct)) {
                 Newdirct = Newdirct.resolve(currntpath.getFileName());
             }
             Files.move(currntpath, Newdirct);
