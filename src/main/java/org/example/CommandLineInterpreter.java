@@ -28,7 +28,9 @@ public class CommandLineInterpreter {
         private String[] parameters;
         private String redirectFile = null;
         private boolean append = false;
-
+        private String getFirstParameter(){
+            return parameters.length > 0 ? parameters[0] : null;
+        }
         private CommandData(String commandInput) {
             Pattern pattern = Pattern.compile("\"([^\"]*)\"|\\S+");
             Matcher matcher = pattern.matcher(commandInput);
@@ -120,7 +122,7 @@ public class CommandLineInterpreter {
                 printStream.println(Ls(commandData.parameters));
                 break;
             case "cd":
-                String help = CdCommand(commandData.parameters);
+                String help = CdCommand(commandData.getFirstParameter());
                 printStream.println(help);
                 break;
             case "rmdir":
@@ -132,8 +134,7 @@ public class CommandLineInterpreter {
                 break;
             }
             case "cat": {
-                String filePath = commandData.parameters.length > 0 ? commandData.parameters[0] : null;
-                try (Stream<String> lines = cat(filePath)) {
+                try (Stream<String> lines = cat(commandData.getFirstParameter())) {
                     lines.forEach(printStream::println);
                 } catch (Exception e) {
                     printStream.println("Error processing file: " + e.getMessage());
@@ -277,7 +278,7 @@ public class CommandLineInterpreter {
     public String LsCommand() {
         Path currentDir = Paths.get(".");
         StringBuilder listingOutput = new StringBuilder("\n");
-        listingOutput.append("Directory: ").append(currentDir.toString()).append("\n\n");
+        listingOutput.append("Directory: ").append(currentDir.toAbsolutePath().toString()).append("\n\n");
         listingOutput.append(String.format("%-5s %-20s %10s %s\n", "Mode", "LastWriteTime", "Length", "Name"));
         listingOutput.append("------------------------------------------------------------\n");
 
@@ -418,25 +419,24 @@ public class CommandLineInterpreter {
         }
     }
 
-    public String CdCommand(String[] args) {
-        if (args.length < 1) {
+    public String CdCommand(String path) {
+        if (path == null) {
             return "Usage: cd <directory_name>";
         }
         Path targetPath;
-        if ("..".equals(args[0])) {
+        if ("..".equals(path)) {
             targetPath = Paths.get(System.getProperty("user.dir")).getParent();
             if (targetPath == null) { // already at the root
                 return "Already at the root directory";
             }
         } else {
             // If a specific directory is provided, use it as the target path
-            targetPath = Paths.get(args[0]);
+            targetPath = Paths.get(path);
         }
 
         // Resolve relative paths correctly (e.g., ".." to go up a directory)
         try {
-            Path newDir = targetPath.isAbsolute() ? targetPath
-                    : Paths.get(System.getProperty("user.dir")).resolve(targetPath).normalize();
+            Path newDir = targetPath.toAbsolutePath().normalize();
 
             // Check if the directory exists and is a directory
             if (Files.exists(newDir) && Files.isDirectory(newDir)) {
