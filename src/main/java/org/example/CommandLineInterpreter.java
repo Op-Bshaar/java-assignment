@@ -323,7 +323,7 @@ public class CommandLineInterpreter {
                 return "Error editing date: " + e.getMessage();
             }
         }
-        File newfile = new File(args[0]);
+        File newfile = new File(pwd(),args[0]);
         try {
             newfile.createNewFile();
             return "created file:" + args[0];

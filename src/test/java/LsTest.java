@@ -26,7 +26,6 @@ public class LsTest {
         // go to the new directory
         folderpath=  Files.createTempDirectory("TestDir");
         cmd.CdCommand(folderpath.toString());
-        //need help moving here
     
         
         
