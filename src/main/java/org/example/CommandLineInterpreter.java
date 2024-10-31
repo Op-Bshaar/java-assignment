@@ -44,12 +44,12 @@ public class CommandLineInterpreter {
             for (int i = partsList.size() - 1; i >= 0; i--) {
                 String part = partsList.get(i);
                 if (part.equals(">") || part.equals(">>")) {
-                    if (i + 1 < partsList.size()) {  // Ensure there is a filename after `>` or `>>`
+                    if (i + 1 < partsList.size()) { // Ensure there is a filename after `>` or `>>`
                         this.redirectFile = partsList.get(i + 1);
                         this.append = part.equals(">>");
                         partsList = new ArrayList<>(partsList.subList(0, i));
                     } else {
-                        System.out.println("Usage <command> " + part +" <file path>");
+                        System.out.println("Usage <command> " + part + " <file path>");
                     }
                     break;
                 }
@@ -115,40 +115,35 @@ public class CommandLineInterpreter {
             case "help":
                 String result = HelpCommand(commandData.parameters);
                 printStream.println(result);
-                
-            case "ls":
-            Integer flag= 0;
-            for(String param: commandData.parameters)
-            {
-                if(param.equals("-r"))
-                {
-                    flag=1;
-                }
-                else if(param.equals("-a"))
-                {
-                    flag=2;
-                }
-                
-            }
-            String result;
-            switch(flag)
-            {
-                
-                case 0:
-                    result = LsCommand(commandData.parameters);
-                    printStream.println(result);
-                break;
-                case 1:
-                    result = LsRCommand(commandData.parameters);
-                    printStream.println(result);
-                break;
-                case 2:
-                    result = LsACommand(commandData.parameters);
-                    printStream.println(result);
-                break;
-            }
 
-            break;
+            case "ls":
+                Integer flag = 0;
+                for (String param : commandData.parameters) {
+                    if (param.equals("-r")) {
+                        flag = 1;
+                    } else if (param.equals("-a")) {
+                        flag = 2;
+                    }
+
+                }
+                String result;
+                switch (flag) {
+
+                    case 0:
+                        result = LsCommand(commandData.parameters);
+                        printStream.println(result);
+                        break;
+                    case 1:
+                        result = LsRCommand(commandData.parameters);
+                        printStream.println(result);
+                        break;
+                    case 2:
+                        result = LsACommand(commandData.parameters);
+                        printStream.println(result);
+                        break;
+                }
+
+                break;
             case "cd":
                 String help = CdCommand(commandData.parameters);
                 printStream.println(help);
@@ -177,11 +172,11 @@ public class CommandLineInterpreter {
                 printStream.println(message);
                 break;
             case "touch":
-            result = TouchCommand(commandData.parameters);
-            printStream.println(result);
+                result = TouchCommand(commandData.parameters);
+                printStream.println(result);
 
             case "move":
-                resultt=MvCommand(commandData.parameters);
+                resultt = MvCommand(commandData.parameters);
                 printStream.println(resultt);
                 break;
             case "exit":
@@ -234,14 +229,15 @@ public class CommandLineInterpreter {
         }
 
     };
-    public String HelpCommand(String []args){
+
+    public String HelpCommand(String[] args) {
         System.out.println("mv[source dirc][target]");
         System.out.println("mkdir[drict name]");
         System.out.println("rdmir[dirct name]");
         System.out.println("ls[options][file/dirct]");
         System.out.println("rm[filename]");
         System.out.println("");
-            
+
     }
 
     public String RmCommand(String[] args) {
@@ -281,9 +277,11 @@ public class CommandLineInterpreter {
 
             for (Path entry : stream) {
                 // Loop Through Files and Get File Attributes
-                if(Files.isHidden(entry)){continue;}
+                if (Files.isHidden(entry)) {
+                    continue;
+                }
                 BasicFileAttributes attrs = Files.readAttributes(entry, BasicFileAttributes.class);
-                
+
                 String type = attrs.isDirectory() ? "d----" : "-a---";
 
                 String lastModifiedTime = new SimpleDateFormat("MM/dd/yyyy hh:mm a")
@@ -302,7 +300,6 @@ public class CommandLineInterpreter {
         return listingOutput.toString();
     }
 
-
     public String LsACommand(String[] args) {
         Path currentDir = Paths.get(".");
         StringBuilder listingOutput = new StringBuilder("\n");
@@ -310,8 +307,7 @@ public class CommandLineInterpreter {
         listingOutput.append(String.format("%-5s %-20s %10s %s\n", "Mode", "LastWriteTime", "Length", "Name"));
         listingOutput.append("------------------------------------------------------------\n");
 
-        try(DirectoryStream<Path> stream =Files.newDirectoryStream(currentDir))
-        {
+        try (DirectoryStream<Path> stream = Files.newDirectoryStream(currentDir)) {
             for (Path entry : stream) {
                 // Loop Through Files and Get File Attributes
 
@@ -330,76 +326,67 @@ public class CommandLineInterpreter {
             return "Error listing contents: " + e.getMessage();
         }
         return listingOutput.toString();
+    }
+
+    public String LsRCommand(String[] args) {
+        List<Path> rev = new ArrayList<>();
+        Path currentDir = Paths.get(".");
+        StringBuilder listingOutput = new StringBuilder("\n");
+        listingOutput.append("Directory").append(currentDir.toString()).append("\n\n");
+        listingOutput.append(String.format("%-5s %-20s %10s %s\n", "Mode", "LastWriteTime", "Length", "Name"));
+        listingOutput.append("------------------------------------------------------------\n");
+
+        try (DirectoryStream<Path> stream = Files.newDirectoryStream(currentDir)) {
+            for (Path entry : stream) {
+                rev.add(entry);
+            }
+            Collections.reverse(rev);
+            for (Path entry : rev) {
+                // Loop Through Files and Get File Attributes
+
+                BasicFileAttributes attrs = Files.readAttributes(entry, BasicFileAttributes.class);
+
+                String type = attrs.isDirectory() ? "d----" : "-a---";
+
+                String lastModifiedTime = new SimpleDateFormat("MM/dd/yyyy hh:mm a")
+                        .format(new Date(attrs.lastModifiedTime().toMillis()));
+
+                long size = attrs.size();
+                String fileName = entry.getFileName().toString();
+
+                // Formatting the output
+                listingOutput.append(String.format("%-5s %-20s %10d %s\n", type, lastModifiedTime, size, fileName));
+            }
+        } catch (IOException e) {
+            return "Error listing contents: " + e.getMessage();
         }
-        
-        public String LsRCommand(String[] args) {
-            List<Path> rev= new ArrayList<>();
-            Path currentDir = Paths.get(".");
-            StringBuilder listingOutput = new StringBuilder("\n");
-            listingOutput.append("Directory").append(currentDir.toString()).append("\n\n");
-            listingOutput.append(String.format("%-5s %-20s %10s %s\n", "Mode", "LastWriteTime", "Length", "Name"));
-            listingOutput.append("------------------------------------------------------------\n");
-    
-            try(DirectoryStream<Path> stream =Files.newDirectoryStream(currentDir))
-            {
-                for(Path entry:stream)
-                {
-                    rev.add(entry);
-                }
-                Collections.reverse(rev);
-                for (Path entry : rev) {
-                    // Loop Through Files and Get File Attributes
-    
-                    BasicFileAttributes attrs = Files.readAttributes(entry, BasicFileAttributes.class);
-    
-                    String type = attrs.isDirectory() ? "d----" : "-a---";
-    
-                    String lastModifiedTime = new SimpleDateFormat("MM/dd/yyyy hh:mm a")
-                            .format(new Date(attrs.lastModifiedTime().toMillis()));
-    
-                    long size = attrs.size();
-                    String fileName = entry.getFileName().toString();
-    
-                    // Formatting the output
-                    listingOutput.append(String.format("%-5s %-20s %10d %s\n", type, lastModifiedTime, size, fileName));
-                }
-            } catch (IOException e) {
-                return "Error listing contents: " + e.getMessage();
-            }
-            return listingOutput.toString();
-            }
-    public String TouchCommand(String[] args)
-    {
-        if(args.length<1)
-        {
+        return listingOutput.toString();
+    }
+
+    public String TouchCommand(String[] args) {
+        if (args.length < 1) {
             return "usage: Touch <FileName>";
         }
-        StringBuilder path= new StringBuilder();
+        StringBuilder path = new StringBuilder();
         Path dir = Paths.get(args[0]);
-        if(Files.exists(dir))
-        {
-            try{
-            Files.setLastModifiedTime(dir, FileTime.from(Instant.now()));
-            return "touched" + args[0];
-            }
-            catch(IOException e)
-            {
+        if (Files.exists(dir)) {
+            try {
+                Files.setLastModifiedTime(dir, FileTime.from(Instant.now()));
+                return "touched" + args[0];
+            } catch (IOException e) {
                 return "Error editing date: " + e.getMessage();
             }
         }
-        File newfile= new File(args[0]);
-        try{
-        newfile.createNewFile();
-        return "created file:" + args[0];
-        }
-        catch(IOException e)
-        {
+        File newfile = new File(args[0]);
+        try {
+            newfile.createNewFile();
+            return "created file:" + args[0];
+        } catch (IOException e) {
             return "Error creating new file:" + e.getMessage();
         }
-        
-        
+
     }
-    
+
     public String RmdirCommand(String[] args) {
         if (args.length < 1) {
             return "Usage: rmdir <directory_name>";
