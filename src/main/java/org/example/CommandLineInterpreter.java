@@ -236,6 +236,7 @@ public class CommandLineInterpreter {
 
         try (DirectoryStream<Path> stream = Files.newDirectoryStream(currentDir)) {
             List<Path> itemPaths = new ArrayList<>();
+            
             for (Path entry : stream) {
                 itemPaths.add(entry);
             }
@@ -244,7 +245,7 @@ public class CommandLineInterpreter {
             }
             for (Path entry : itemPaths) {
                 // Loop Through Files and Get File Attributes
-                if (Files.isHidden(entry) && !all) {
+                if ((Files.isHidden(entry) && !all)||(entry.getFileName().toString().startsWith("."))) {
                     continue;
                 }
                 BasicFileAttributes attrs = Files.readAttributes(entry, BasicFileAttributes.class);
