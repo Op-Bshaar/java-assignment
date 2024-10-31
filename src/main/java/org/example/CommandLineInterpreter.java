@@ -288,6 +288,7 @@ public class CommandLineInterpreter {
 
         try (DirectoryStream<Path> stream = Files.newDirectoryStream(currentDir)) {
             List<Path> itemPaths = new ArrayList<>();
+            
             for (Path entry : stream) {
                 itemPaths.add(entry);
             }
@@ -296,7 +297,7 @@ public class CommandLineInterpreter {
             }
             for (Path entry : itemPaths) {
                 // Loop Through Files and Get File Attributes
-                if (Files.isHidden(entry) && !all) {
+                if ((Files.isHidden(entry) && !all)) {
                     continue;
                 }
                 BasicFileAttributes attrs = Files.readAttributes(entry, BasicFileAttributes.class);
@@ -433,12 +434,12 @@ public class CommandLineInterpreter {
             if (!Files.exists(currntpath)) {
                 return "no file or dircotry";
             }
-            if (Files.isDirectory(Newdirct) && !Files.exists(Newdirct)) {
+            if (!Files.exists(Newdirct)) {
                 Files.createDirectories(Newdirct);
             }
-            if (Files.isDirectory(Newdirct)) {
-                Newdirct = Newdirct.resolve(currntpath.getFileName());
-            }
+
+            Newdirct = Newdirct.resolve(currntpath.getFileName());
+
             Files.move(currntpath, Newdirct);
             return "move";
 

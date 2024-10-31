@@ -6,6 +6,8 @@
   <component name="ChangeListManager">
     <list default="true" id="151847c1-7162-4c99-a354-f4ae650dd19b" name="Changes" comment="mv">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ali.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/CommandLineInterpreter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/CommandLineInterpreter.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/test/java/mvTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/mvTest.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -47,6 +49,7 @@
     "JUnit.TestBashar.executor": "Run",
     "JUnit.mvTest.testMoveFileToExistingDirectory.executor": "Run",
     "JUnit.mvTest.testMoveFileToNonExistingDirectory.executor": "Run",
+    "JUnit.mvTest.testMoveFileWithAbsolutePath.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "git-widget-placeholder": "main",
@@ -60,26 +63,6 @@
       <option name="PACKAGE_NAME" value="" />
       <option name="MAIN_CLASS_NAME" value="LsTest" />
       <option name="TEST_OBJECT" value="class" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="LsTest.testLs" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
-      <module name="java-assingmet" />
-      <option name="PACKAGE_NAME" value="" />
-      <option name="MAIN_CLASS_NAME" value="LsTest" />
-      <option name="METHOD_NAME" value="testLs" />
-      <option name="TEST_OBJECT" value="method" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="LsTest.testLsCommand" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
-      <module name="java-assingmet" />
-      <option name="PACKAGE_NAME" value="" />
-      <option name="MAIN_CLASS_NAME" value="LsTest" />
-      <option name="METHOD_NAME" value="testLsCommand" />
-      <option name="TEST_OBJECT" value="method" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
@@ -104,13 +87,33 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+    <configuration name="mvTest.testMoveFileWithAbsolutePath" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="java-assingmet" />
+      <option name="PACKAGE_NAME" value="" />
+      <option name="MAIN_CLASS_NAME" value="mvTest" />
+      <option name="METHOD_NAME" value="testMoveFileWithAbsolutePath" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="mvTest.testMoveNonExistentFile" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="java-assingmet" />
+      <option name="PACKAGE_NAME" value="" />
+      <option name="MAIN_CLASS_NAME" value="mvTest" />
+      <option name="METHOD_NAME" value="testMoveNonExistentFile" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <recent_temporary>
       <list>
         <item itemvalue="JUnit.mvTest.testMoveFileToNonExistingDirectory" />
+        <item itemvalue="JUnit.mvTest.testMoveNonExistentFile" />
+        <item itemvalue="JUnit.mvTest.testMoveFileWithAbsolutePath" />
         <item itemvalue="JUnit.mvTest.testMoveFileToExistingDirectory" />
         <item itemvalue="JUnit.LsTest" />
-        <item itemvalue="JUnit.LsTest.testLsCommand" />
-        <item itemvalue="JUnit.LsTest.testLs" />
       </list>
     </recent_temporary>
   </component>
@@ -299,7 +302,15 @@
       <option name="project" value="LOCAL" />
       <updated>1730388864598</updated>
     </task>
-    <option name="localTasksCounter" value="23" />
+    <task id="LOCAL-00023" summary="mv">
+      <option name="closed" value="true" />
+      <created>1730390821344</created>
+      <option name="number" value="00023" />
+      <option name="presentableId" value="LOCAL-00023" />
+      <option name="project" value="LOCAL" />
+      <updated>1730390821344</updated>
+    </task>
+    <option name="localTasksCounter" value="24" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
