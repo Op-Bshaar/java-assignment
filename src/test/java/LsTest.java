@@ -44,6 +44,7 @@ public class LsTest {
 
         Path hiddenfile= Paths.get(folderpath.toString(),".hiddenfile");
         Files.createFile(hiddenfile);
+        Files.setAttribute(hiddenfile, "dos:hidden", true);
         
     }
 
@@ -137,7 +138,7 @@ public class LsTest {
                 Collections.reverse(itemPaths);
             }
             for (Path entry : itemPaths) {
-                if ((Files.isHidden(entry) && !all)||(entry.getFileName().toString().startsWith("."))) {
+                if ((Files.isHidden(entry) && !all)) {
                     continue;
                 }
                 BasicFileAttributes attrs = Files.readAttributes(entry, BasicFileAttributes.class);

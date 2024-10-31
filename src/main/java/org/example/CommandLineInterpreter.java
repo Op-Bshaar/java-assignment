@@ -273,7 +273,7 @@ public class CommandLineInterpreter {
             }
             for (Path entry : itemPaths) {
                 // Loop Through Files and Get File Attributes
-                if ((Files.isHidden(entry) && !all)||(entry.getFileName().toString().startsWith("."))) {
+                if ((Files.isHidden(entry) && !all)) {
                     continue;
                 }
                 BasicFileAttributes attrs = Files.readAttributes(entry, BasicFileAttributes.class);
