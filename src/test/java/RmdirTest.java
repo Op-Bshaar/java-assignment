@@ -42,7 +42,7 @@ public class RmdirTest {
 
     @Test
     public void testRemoveNonExistentDirectory() {
-        Path nonExistentDir = Path.of("nonExistentDirTest");
+        Path nonExistentDir = Path.of("nonExistentDirTest").toAbsolutePath();
         String output = cmd.RmdirCommand(nonExistentDir.toString());
         assertEquals("Not a directory: " + nonExistentDir.toAbsolutePath(), output);
     }

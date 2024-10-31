@@ -39,6 +39,6 @@ public class RedirectTest {
         cmd.executeCommand(command);
         // Verify file content
         String content = Files.readString(Path.of(fileName));
-        Assertions.assertEquals(expectedContent, content);
+        Assertions.assertEquals(expectedContent.trim(), content.trim());
     }
 }

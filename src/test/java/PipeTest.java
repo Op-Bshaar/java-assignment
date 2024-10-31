@@ -51,7 +51,7 @@ public class PipeTest {
         final Path filePath = Files.createTempFile("testFile", ".txt");
         Files.writeString(filePath, "testdir");
         cmd.executeCommand("cat "+ filePath +" | mkdir");
-        final Path dirPath = Paths.get("testdir");
+        final Path dirPath = Paths.get(cmd.pwd(), "testdir");
         assertTrue(Files.exists(dirPath));
         Files.deleteIfExists(filePath);
         Files.deleteIfExists(dirPath);

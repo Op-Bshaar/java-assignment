@@ -54,30 +54,6 @@ public class CommandLineInterpreter {
         }
     }
 
-    private Boolean executeCommand(String command, PrintStream out) {
-        Boolean run = false;
-        CommandData commandData = new CommandData(command);
-        PrintStream printStream = out;
-        try {
-            // Check if output redirection is needed
-            if (commandData.getRedirectFile() != null) {
-                FileOutputStream fileOutputStream = new FileOutputStream(commandData.getRedirectFile(),
-                        commandData.isAppend());
-                printStream = new PrintStream(fileOutputStream);
-            }
-
-            // Execute the command, redirecting output as necessary
-            run = executeCommand(commandData, printStream);
-        } catch (IOException e) {
-            out.println("Error with redirection: " + e.getMessage());
-        } finally {
-            if (printStream != out) {
-                printStream.close();
-            }
-        }
-        return run;
-    }
-
     public Boolean executeCommand(String command) {
         boolean run = true;
         final String[] commands = command.split("\\|");
@@ -110,62 +86,78 @@ public class CommandLineInterpreter {
     }
 
     public Boolean executeCommand(CommandData commandData, PrintStream printStream) {
-
-        if (commandData.getCommand().equalsIgnoreCase("exit")) {
-            return false;
+        if (commandData.getRedirectFile() != null) {
+            try {
+                System.out.println(commandData.isAppend());
+                FileOutputStream fos = new FileOutputStream(commandData.getRedirectFile(), commandData.isAppend());
+                printStream = new PrintStream(fos);
+            } catch (IOException e) {
+                System.err.println("Error: Could not redirect output to file: " + e.getMessage());
+                return true;
+            }
         }
-        switch (commandData.getCommand()) {
-            case "mkdir":
-                String path = MkdirCommand(commandData.getFirstParameter());
-                printStream.println(path);
-                break;
-            case "rm":
-                String output = RmCommand(commandData.getParameters());
-                printStream.println(output);
-                break;
-            case "help":
-                String result = HelpCommand();
-                printStream.println(result);
-
-            case "ls":
-                printStream.println(LsCommand(commandData.getParameters()));
-                break;
-            case "cd":
-                String help = CdCommand(commandData.getFirstParameter());
-                printStream.println(help);
-                break;
-            case "rmdir":
-                String any = RmdirCommand(commandData.getFirstParameter());
-                printStream.println(any);
-                break;
-            case "pwd": {
-                printStream.println(pwd());
-                break;
+        try {
+            if (commandData.getCommand().equalsIgnoreCase("exit")) {
+                return false;
             }
-            case "cat": {
-                try (Stream<String> lines = cat(commandData.getFirstParameter())) {
-                    lines.forEach(printStream::println);
-                } catch (Exception e) {
-                    printStream.println("Error processing file: " + e.getMessage());
+            switch (commandData.getCommand()) {
+                case "mkdir":
+                    String path = MkdirCommand(commandData.getFirstParameter());
+                    printStream.println(path);
+                    break;
+                case "rm":
+                    String output = RmCommand(commandData.getParameters());
+                    printStream.println(output);
+                    break;
+                case "help":
+                    String result = HelpCommand();
+                    printStream.println(result);
+                    break;
+                case "ls":
+                    printStream.println(LsCommand(commandData.getParameters()));
+                    break;
+                case "cd":
+                    String help = CdCommand(commandData.getFirstParameter());
+                    printStream.println(help);
+                    break;
+                case "rmdir":
+                    String any = RmdirCommand(commandData.getFirstParameter());
+                    printStream.println(any);
+                    break;
+                case "pwd": {
+                    printStream.println(pwd());
+                    break;
                 }
-                break;
+                case "cat": {
+                    try (Stream<String> lines = cat(commandData.getFirstParameter())) {
+                        lines.forEach(printStream::println);
+                    } catch (Exception e) {
+                        printStream.println("Error processing file: " + e.getMessage());
+                    }
+                    break;
+                }
+                case "echo":
+                    String message = commandData.getParameters().length > 0
+                            ? String.join(" ", commandData.getParameters())
+                            : "Usage: echo <message>";
+                    printStream.println(message);
+                    break;
+                case "touch":
+                    result = TouchCommand(commandData.getParameters());
+                    printStream.println(result);
+                    break;
+                case "mv":
+                    result = MvCommand(commandData.getParameters());
+                    printStream.println(result);
+                    break;
+                default:
+                    printStream.println("Command " + commandData.getCommand() + " not found.");
             }
-            case "echo":
-                String message = commandData.getParameters().length > 0
-                        ? String.join(" ", commandData.getParameters())
-                        : "Usage: echo <message>";
-                printStream.println(message);
-                break;
-            case "touch":
-                result = TouchCommand(commandData.getParameters());
-                printStream.println(result);
-                break;
-            case "mv":
-                result = MvCommand(commandData.getParameters());
-                printStream.println(result);
-                break;
-            default:
-                printStream.println("Command " + commandData.getCommand() + " not found.");
+        } finally {
+            // Close the print stream if it was redirected to avoid resource leak
+            if (commandData.getRedirectFile() != null) {
+                printStream.close();
+            }
         }
         return true;
     }
@@ -288,7 +280,7 @@ public class CommandLineInterpreter {
 
         try (DirectoryStream<Path> stream = Files.newDirectoryStream(currentDir)) {
             List<Path> itemPaths = new ArrayList<>();
-            
+
             for (Path entry : stream) {
                 itemPaths.add(entry);
             }

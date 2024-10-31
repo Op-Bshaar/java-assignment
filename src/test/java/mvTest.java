@@ -40,22 +40,21 @@ public class mvTest {
 
     @Test
     public void testMoveFileToNonExistingDirectory() throws IOException {
-        // Create a temporary file
-        Path currentFile = Files.createTempFile("h", ".txt");
-        Path Newdirct = Files.createTempDirectory("tempDir").resolve("nonExistingDir");
+        Path currentFile = Files.createTempFile("sourceFile", ".txt");
+        Path nonExistingDir = Path.of("nonExistingTargetDir").toAbsolutePath();
 
         // Test the mv command
-        String[] args = { currentFile.toString(), Newdirct.toString() };
+        String[] args = { currentFile.toString(), nonExistingDir.toString() };
         String result = cmd.MvCommand(args);
 
-        // Assert the new directory was created and the file was moved successfully
-        Path movedFilePath = Newdirct.resolve(currentFile.getFileName());
+        // Assert that the directory was created and the file was moved
+        Path movedFilePath = nonExistingDir.resolve(currentFile.getFileName());
         assertTrue(Files.exists(movedFilePath));
         assertEquals("move", result);
 
         // Clean up
         Files.deleteIfExists(movedFilePath);
-        Files.deleteIfExists(Newdirct.getParent());
+        Files.deleteIfExists(nonExistingDir);
     }
 
     @Test
