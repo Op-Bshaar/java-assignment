@@ -41,7 +41,7 @@ public class mvTest {
     @Test
     public void testMoveFileToNonExistingDirectory() throws IOException {
         // Create a temporary file
-        Path currentFile = Files.createTempFile("sourceFile", ".txt");
+        Path currentFile = Files.createTempFile("h", ".txt");
         Path Newdirct = Files.createTempDirectory("tempDir").resolve("nonExistingDir");
 
         // Test the mv command

@@ -408,12 +408,12 @@ public class CommandLineInterpreter {
             if (!Files.exists(currntpath)) {
                 return "no file or dircotry";
             }
-            if (Files.isDirectory(Newdirct) && !Files.exists(Newdirct)) {
+            if (!Files.exists(Newdirct)) {
                 Files.createDirectories(Newdirct);
             }
-            if (Files.isDirectory(Newdirct)) {
-                Newdirct = Newdirct.resolve(currntpath.getFileName());
-            }
+
+            Newdirct = Newdirct.resolve(currntpath.getFileName());
+
             Files.move(currntpath, Newdirct);
             return "move";
 
