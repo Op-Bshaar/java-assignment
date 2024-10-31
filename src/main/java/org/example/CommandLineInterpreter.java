@@ -113,36 +113,11 @@ public class CommandLineInterpreter {
                 printStream.println(output);
                 break;
             case "help":
-                String result = HelpCommand(commandData.parameters);
+                String result = HelpCommand();
                 printStream.println(result);
 
             case "ls":
-                Integer flag = 0;
-                for (String param : commandData.parameters) {
-                    if (param.equals("-r")) {
-                        flag = 1;
-                    } else if (param.equals("-a")) {
-                        flag = 2;
-                    }
-
-                }
-                String result;
-                switch (flag) {
-
-                    case 0:
-                        result = LsCommand(commandData.parameters);
-                        printStream.println(result);
-                        break;
-                    case 1:
-                        result = LsRCommand(commandData.parameters);
-                        printStream.println(result);
-                        break;
-                    case 2:
-                        result = LsACommand(commandData.parameters);
-                        printStream.println(result);
-                        break;
-                }
-
+                printStream.println(Ls(commandData.parameters));
                 break;
             case "cd":
                 String help = CdCommand(commandData.parameters);
@@ -174,10 +149,10 @@ public class CommandLineInterpreter {
             case "touch":
                 result = TouchCommand(commandData.parameters);
                 printStream.println(result);
-
+                break;
             case "move":
-                resultt = MvCommand(commandData.parameters);
-                printStream.println(resultt);
+                result = MvCommand(commandData.parameters);
+                printStream.println(result);
                 break;
             case "exit":
                 return false;
@@ -230,23 +205,19 @@ public class CommandLineInterpreter {
 
     };
 
-    public String HelpCommand(String[] args) {
-        System.out.println("mv[source dirc][target]");
-        System.out.println("mkdir[drict name]");
-        System.out.println("rdmir[dirct name]");
-        System.out.println("ls[options][file/dirct]");
-        System.out.println("rm[filename]");
-        System.out.println("");
+    final String helpMessage = String.join(System.lineSeparator(),
+            "mv [source dir] [target]",
+            "mkdir [directory name]",
+            "rmdir [directory name]",
+            "ls [options] [file/directory]",
+            "rm [filename]") + System.lineSeparator();
 
+    public String HelpCommand() {
+        return helpMessage;
     }
 
-    public String RmCommand(String[] args) {
-
-        if (args.length < 1) {
-            return "Usage: rm <file_or_directory_name>";
-        }
-        Path rmPath = Paths.get(args[0]);
-
+    public String RmCommand(String file) {
+        Path rmPath = Paths.get(file);
         try {
             if (Files.isDirectory(rmPath)) {
                 Files.deleteIfExists(rmPath);
@@ -262,9 +233,48 @@ public class CommandLineInterpreter {
             return "Error deleting file or directory: " + e.getMessage();
         }
 
-    };
+    }
 
-    public String LsCommand(String[] args) {
+    public String RmCommand(String[] files) {
+
+        if (files.length < 1) {
+            return "Usage: rm <file_or_directory_name>";
+        }
+
+        StringBuilder result = new StringBuilder();
+        for (String file : files) {
+            String s = RmCommand(file);
+            result.append(s);
+            result.append(System.lineSeparator());
+        }
+        return result.toString();
+    }
+
+    public String Ls(String[] args) {
+        boolean recursive = false;
+        boolean all = false;
+        for (String param : args) {
+            switch (param) {
+                case "-r":
+                    recursive = true;
+                    break;
+                case "-a":
+                    all = true;
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        if (recursive) {
+            return LsRCommand(args);
+        } else if (all) {
+            return LsACommand(args);
+        }
+        return LsCommand();
+    }
+
+    public String LsCommand() {
         Path currentDir = Paths.get(".");
         StringBuilder listingOutput = new StringBuilder("\n");
         listingOutput.append("Directory: ").append(currentDir.toString()).append("\n\n");
@@ -367,7 +377,6 @@ public class CommandLineInterpreter {
         if (args.length < 1) {
             return "usage: Touch <FileName>";
         }
-        StringBuilder path = new StringBuilder();
         Path dir = Paths.get(args[0]);
         if (Files.exists(dir)) {
             try {
@@ -440,15 +449,12 @@ public class CommandLineInterpreter {
         } catch (Exception e) {
             return "Error changing directory: " + e.getMessage();
         }
+    }
 
-        public String MvCommand(String[]args){
-            Path currntdirct=Paths.get(args[0]);
-            Path Newdirct=Paths.get(args[1]);
+    public String MvCommand(String[] args) {
+        Path currntdirct = Paths.get(args[0]);
+        Path Newdirct = Paths.get(args[1]);
+        return "Moved";
 
-            File.move(currntdirct,Newdirct);
-            return "Moved";
-
-            
-        }
     }
 }

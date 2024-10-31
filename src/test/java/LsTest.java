@@ -18,7 +18,7 @@ public class LsTest {
     }
     @Test
     public void testLs(){
-        String result = cmd.LsCommand(new String[] {"bashar"});
+        String result = cmd.LsCommand();
 
         assertTrue(result.contains("file1.txt"), "Output should include file1.txt");
         assertTrue(result.contains("file2.txt"), "Output should include file2.txt");
