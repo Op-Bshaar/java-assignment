@@ -64,7 +64,7 @@ public class CommandLineInterpreter {
 
         switch (commandData.getCommand()) {
             case "mkdir":
-                String path = MkdirCommand(commandData.getParameters());
+                String path = MkdirCommand(commandData.getFirstParameter());
                 printStream.println(path);
                 break;
             case "rm":
@@ -147,13 +147,13 @@ public class CommandLineInterpreter {
 
     // bashar command
 
-    public String MkdirCommand(String[] args) {
+    public String MkdirCommand(String path) {
 
-        if (args.length < 1) {
+        if (path == null) {
             return "Usage: mkdir <directory_name>";
         }
 
-        Path dirPath = Paths.get(args[0]);
+        Path dirPath = Paths.get(path);
         try {
             Files.createDirectories(dirPath);
             return "Directory created: " + dirPath.toAbsolutePath();
