@@ -1,9 +1,12 @@
 package org.example;
 
 import java.nio.file.attribute.BasicFileAttributes;
+import java.nio.file.attribute.FileTime;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.util.Date;
 import java.util.List;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
@@ -14,50 +17,9 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Scanner;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 public class CommandLineInterpreter {
-
-    private class CommandData {
-        private String command;
-        private String[] parameters;
-        private String redirectFile = null;
-        private boolean append = false;
-
-        private CommandData(String commandInput) {
-            Pattern pattern = Pattern.compile("\"([^\"]*)\"|\\S+");
-            Matcher matcher = pattern.matcher(commandInput);
-            ArrayList<String> partsList = new ArrayList<>();
-            while (matcher.find()) {
-                if (matcher.group(1) != null) {
-                    partsList.add(matcher.group(1));
-                } else {
-                    partsList.add(matcher.group());
-                }
-            }
-
-            for (int i = partsList.size() - 1; i >= 0; i--) {
-                String part = partsList.get(i);
-                if (part.equals(">") || part.equals(">>")) {
-                    if (i + 1 < partsList.size()) {  // Ensure there is a filename after `>` or `>>`
-                        this.redirectFile = partsList.get(i + 1);
-                        this.append = part.equals(">>");
-                        partsList = new ArrayList<>(partsList.subList(0, i));
-                    } else {
-                        System.out.println("Usage <command> " + part +" <file path>");
-                    }
-                    break;
-                }
-            }
-
-            this.command = partsList.get(0);
-            this.parameters = partsList.size() > 1 ? partsList.subList(1, partsList.size()).toArray(new String[0])
-                    : new String[0];
-        }
-
-    }
 
     public void runCommandLine() {
 
@@ -78,10 +40,10 @@ public class CommandLineInterpreter {
         PrintStream printStream = System.out; // Default to standard output
         try {
             // Check if output redirection is needed
-            if (commandData.redirectFile != null) {
+            if (commandData.getRedirectFile() != null) {
                 // Open a FileOutputStream in append or overwrite mode based on the `append`
                 // flag
-                FileOutputStream fos = new FileOutputStream(commandData.redirectFile, commandData.append);
+                FileOutputStream fos = new FileOutputStream(commandData.getRedirectFile(), commandData.isAppend());
                 printStream = new PrintStream(fos);
             }
 
@@ -100,67 +62,36 @@ public class CommandLineInterpreter {
 
     private Boolean executeCommand(CommandData commandData, PrintStream printStream) {
 
-        switch (commandData.command) {
+        switch (commandData.getCommand()) {
             case "mkdir":
-                String path = MkdirCommand(commandData.parameters);
+                String path = MkdirCommand(commandData.getFirstParameter());
                 printStream.println(path);
                 break;
             case "rm":
-                String output = RmCommand(commandData.parameters);
+                String output = RmCommand(commandData.getParameters());
                 printStream.println(output);
                 break;
-            case "ls":
-            Integer flag= 0;
-            for(String param: commandData.parameters)
-            {
-                if(param.equals("-r"))
-                {
-                    flag=1;
-                }
-                else if(param.equals("-a"))
-                {
-                    flag=2;
-                }
-                
-            }
-            String result;
-            switch(flag)
-            {
-                
-                case 0:
-                    result = LsCommand(commandData.parameters);
-                    printStream.println(result);
-                break;
-                case 1:
-                    result = LsRCommand(commandData.parameters);
-                    printStream.println(result);
-                break;
-                case 2:
-                    result = LsACommand(commandData.parameters);
-                    printStream.println(result);
-                break;
-            }
+            case "help":
+                String result = HelpCommand();
+                printStream.println(result);
 
-            break;
+            case "ls":
+                printStream.println(Ls(commandData.getParameters()));
+                break;
             case "cd":
-                String help = CdCommand(commandData.parameters);
+                String help = CdCommand(commandData.getFirstParameter());
                 printStream.println(help);
                 break;
             case "rmdir":
-                String any = RmdirCommand(commandData.parameters);
+                String any = RmdirCommand(commandData.getFirstParameter());
                 printStream.println(any);
-                break;
-            case "mv":
-                String reslut = RvCommand(commandData.parameters);
-                printStream.println(reslut);
                 break;
             case "pwd": {
                 printStream.println(pwd());
                 break;
             }
             case "cat": {
-                String filePath = commandData.parameters.length > 0 ? commandData.parameters[0] : null;
-                try (Stream<String> lines = cat(filePath)) {
+                try (Stream<String> lines = cat(commandData.getFirstParameter())) {
                     lines.forEach(printStream::println);
                 } catch (Exception e) {
                     printStream.println("Error processing file: " + e.getMessage());
@@ -168,15 +99,23 @@ public class CommandLineInterpreter {
                 break;
             }
             case "echo":
-                String message = commandData.parameters.length > 0
-                        ? String.join(" ", commandData.parameters)
+                String message = commandData.getParameters().length > 0
+                        ? String.join(" ", commandData.getParameters())
                         : "Usage: echo <message>";
                 printStream.println(message);
+                break;
+            case "touch":
+                result = TouchCommand(commandData.getParameters());
+                printStream.println(result);
+                break;
+            case "move":
+                result = MvCommand(commandData.getParameters());
+                printStream.println(result);
                 break;
             case "exit":
                 return false;
             default:
-                printStream.println("Command " + commandData.command + " not found.");
+                printStream.println("Command " + commandData.getCommand() + " not found.");
         }
         return true;
     }
@@ -206,15 +145,13 @@ public class CommandLineInterpreter {
         }
     }
 
-    // bashar command
+    public String MkdirCommand(String path) {
 
-    public String MkdirCommand(String[] args) {
-
-        if (args.length < 1) {
+        if (path == null) {
             return "Usage: mkdir <directory_name>";
         }
 
-        Path dirPath = Paths.get(args[0]);
+        Path dirPath = Paths.get(path).isAbsolute() ? Paths.get(path).normalize() : Paths.get(pwd(), path).normalize();
         try {
             Files.createDirectories(dirPath);
             return "Directory created: " + dirPath.toAbsolutePath();
@@ -224,13 +161,19 @@ public class CommandLineInterpreter {
 
     };
 
-    public String RmCommand(String[] args) {
+    final String helpMessage = String.join(System.lineSeparator(),
+            "mv [source dir] [target]",
+            "mkdir [directory name]",
+            "rmdir [directory name]",
+            "ls [options] [file/directory]",
+            "rm [filename]") + System.lineSeparator();
 
-        if (args.length < 1) {
-            return "Usage: rm <file_or_directory_name>";
-        }
-        Path rmPath = Paths.get(args[0]);
+    public String HelpCommand() {
+        return helpMessage;
+    }
 
+    public String RmCommand(String file) {
+        Path rmPath = Paths.get(file).isAbsolute() ? Paths.get(file).normalize() : Paths.get(pwd(), file).normalize();
         try {
             if (Files.isDirectory(rmPath)) {
                 Files.deleteIfExists(rmPath);
@@ -246,14 +189,54 @@ public class CommandLineInterpreter {
             return "Error deleting file or directory: " + e.getMessage();
         }
 
-    };
+    }
 
-    public String LsCommand(String[] args) {
-        Path currentDir = Paths.get(".");
+    public String RmCommand(String[] files) {
+
+        if (files.length < 1) {
+            return "Usage: rm <file_or_directory_name>";
+        }
+
+        StringBuilder result = new StringBuilder();
+        for (String file : files) {
+            String s = RmCommand(file);
+            result.append(s);
+            result.append(System.lineSeparator());
+        }
+        return result.toString();
+    }
+
+    public String Ls(String[] args) {
+        boolean recursive = false;
+        boolean all = false;
+        for (String param : args) {
+            switch (param) {
+                case "-r":
+                    recursive = true;
+                    break;
+                case "-a":
+                    all = true;
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        if (recursive) {
+            return LsRCommand(args);
+        } else if (all) {
+            return LsACommand(args);
+        }
+        return LsCommand();
+    }
+
+    public String LsCommand() {
+        Path currentDir = Paths.get(pwd());
         StringBuilder listingOutput = new StringBuilder("\n");
-        listingOutput.append("Directory: ").append(currentDir.toString()).append("\n\n");
+        listingOutput.append("Directory: ").append(currentDir.toAbsolutePath())
+        .append(System.lineSeparator()).append(System.lineSeparator());
         listingOutput.append(String.format("%-5s %-20s %10s %s\n", "Mode", "LastWriteTime", "Length", "Name"));
-        listingOutput.append("------------------------------------------------------------\n");
+        listingOutput.append("------------------------------------------------------------").append(System.lineSeparator());
 
         // Directory Stream to Iterate Through Files
 
@@ -261,9 +244,11 @@ public class CommandLineInterpreter {
 
             for (Path entry : stream) {
                 // Loop Through Files and Get File Attributes
-                if(Files.isHidden(entry)){continue;}
+                if (Files.isHidden(entry)) {
+                    continue;
+                }
                 BasicFileAttributes attrs = Files.readAttributes(entry, BasicFileAttributes.class);
-                
+
                 String type = attrs.isDirectory() ? "d----" : "-a---";
 
                 String lastModifiedTime = new SimpleDateFormat("MM/dd/yyyy hh:mm a")
@@ -282,16 +267,14 @@ public class CommandLineInterpreter {
         return listingOutput.toString();
     }
 
-
     public String LsACommand(String[] args) {
-        Path currentDir = Paths.get(".");
+        Path currentDir = Paths.get(pwd());
         StringBuilder listingOutput = new StringBuilder("\n");
         listingOutput.append("Directory").append(currentDir.toString()).append("\n\n");
         listingOutput.append(String.format("%-5s %-20s %10s %s\n", "Mode", "LastWriteTime", "Length", "Name"));
         listingOutput.append("------------------------------------------------------------\n");
 
-        try(DirectoryStream<Path> stream =Files.newDirectoryStream(currentDir))
-        {
+        try (DirectoryStream<Path> stream = Files.newDirectoryStream(currentDir)) {
             for (Path entry : stream) {
                 // Loop Through Files and Get File Attributes
 
@@ -310,51 +293,94 @@ public class CommandLineInterpreter {
             return "Error listing contents: " + e.getMessage();
         }
         return listingOutput.toString();
-        }
-        
-        public String LsRCommand(String[] args) {
-            List<Path> rev= new ArrayList<>();
-            Path currentDir = Paths.get(".");
-            StringBuilder listingOutput = new StringBuilder("\n");
-            listingOutput.append("Directory").append(currentDir.toString()).append("\n\n");
-            listingOutput.append(String.format("%-5s %-20s %10s %s\n", "Mode", "LastWriteTime", "Length", "Name"));
-            listingOutput.append("------------------------------------------------------------\n");
-    
-            try(DirectoryStream<Path> stream =Files.newDirectoryStream(currentDir))
-            {
-                for(Path entry:stream)
-                {
-                    rev.add(entry);
-                }
-                Collections.reverse(rev);
-                for (Path entry : rev) {
-                    // Loop Through Files and Get File Attributes
-    
-                    BasicFileAttributes attrs = Files.readAttributes(entry, BasicFileAttributes.class);
-    
-                    String type = attrs.isDirectory() ? "d----" : "-a---";
-    
-                    String lastModifiedTime = new SimpleDateFormat("MM/dd/yyyy hh:mm a")
-                            .format(new Date(attrs.lastModifiedTime().toMillis()));
-    
-                    long size = attrs.size();
-                    String fileName = entry.getFileName().toString();
-    
-                    // Formatting the output
-                    listingOutput.append(String.format("%-5s %-20s %10d %s\n", type, lastModifiedTime, size, fileName));
-                }
-            } catch (IOException e) {
-                return "Error listing contents: " + e.getMessage();
-            }
-            return listingOutput.toString();
-            }
+    }
 
+    public String LsRCommand(String[] args) {
+        List<Path> rev = new ArrayList<>();
+        Path currentDir = Paths.get(pwd());
+        StringBuilder listingOutput = new StringBuilder("\n");
+        listingOutput.append("Directory").append(currentDir.toString()).append("\n\n");
+        listingOutput.append(String.format("%-5s %-20s %10s %s\n", "Mode", "LastWriteTime", "Length", "Name"));
+        listingOutput.append("------------------------------------------------------------\n");
+
+        try (DirectoryStream<Path> stream = Files.newDirectoryStream(currentDir)) {
+            for (Path entry : stream) {
+                rev.add(entry);
+            }
+            Collections.reverse(rev);
+            for (Path entry : rev) {
+                // Loop Through Files and Get File Attributes
+
+                BasicFileAttributes attrs = Files.readAttributes(entry, BasicFileAttributes.class);
+
+                String type = attrs.isDirectory() ? "d----" : "-a---";
+
+                String lastModifiedTime = new SimpleDateFormat("MM/dd/yyyy hh:mm a")
+                        .format(new Date(attrs.lastModifiedTime().toMillis()));
+
+                long size = attrs.size();
+                String fileName = entry.getFileName().toString();
+
+                // Formatting the output
+                listingOutput.append(String.format("%-5s %-20s %10d %s\n", type, lastModifiedTime, size, fileName));
+            }
+        } catch (IOException e) {
+            return "Error listing contents: " + e.getMessage();
+        }
+        return listingOutput.toString();
+    }
+
+    public String TouchCommand(String[] args) {
+        if (args.length < 1) {
+            return "usage: Touch <FileName>";
+        }
+        Path dir = Paths.get(args[0]);
+        if (Files.exists(dir)) {
+            try {
+                Files.setLastModifiedTime(dir, FileTime.from(Instant.now()));
+                return "touched" + args[0];
+            } catch (IOException e) {
+                return "Error editing date: " + e.getMessage();
+            }
+        }
+        File newfile = new File(args[0]);
+        try {
+            newfile.createNewFile();
+            return "created file:" + args[0];
+        } catch (IOException e) {
+            return "Error creating new file:" + e.getMessage();
+        }
+
+    }
+    
+    public String RmdirCommand(String dir) {
+        Path dirPath = Paths.get(dir).isAbsolute() ? Paths.get(dir).normalize() : Paths.get(pwd(), dir).normalize();
+        try {
+            if (Files.isDirectory(dirPath)) {
+                // Check if the directory is empty
+                try (DirectoryStream<Path> entries = Files.newDirectoryStream(dirPath)) {
+                    if (entries.iterator().hasNext()) {
+                        return "Directory is not empty: " + dirPath.toAbsolutePath();
+                    }
+                }
+                // Directory is empty, proceed to delete
+                Files.delete(dirPath);
+                return "Directory deleted: " + dirPath.toAbsolutePath();
+            } else {
+                return "Not a directory: " + dirPath.toAbsolutePath();
+            }
+        } catch (IOException e) {
+            return "Error deleting directory: " + e.getMessage();
+        }
+    }
+    
+    /*
     public String RmdirCommand(String[] args) {
         if (args.length < 1) {
             return "Usage: rmdir <directory_name>";
         }
 
-        Path dirPath = Paths.get(args[0]);
+        Path dirPath = Paths.get(pwd(), args[0]).normalize();
         try {
             Files.walk(dirPath)
                     .forEach(path -> {
@@ -370,65 +396,25 @@ public class CommandLineInterpreter {
             return "Error deleting directory: " + e.getMessage();
         }
     }
-
-    public String RvCommand(String[] args) {
-        if (args.length == 0) {
-            return "Error: No path specified.";
-        }
-
-        Path pathToRemove = Paths.get(args[0]);
-
-        // Check if the path exists
-        if (!Files.exists(pathToRemove)) {
-            return "Error: Path does not exist.";
-        }
-
-        try {
-            if (Files.isDirectory(pathToRemove)) {
-                // If it's a directory, delete it and all its contents
-                try (Stream<Path> paths = Files.walk(pathToRemove)) {
-                    paths.sorted(Collections.reverseOrder())
-                            .forEach(p -> {
-                                try {
-                                    Files.delete(p);
-                                } catch (IOException e) {
-                                    System.err.println("Error deleting file: " + p + " - " + e.getMessage());
-                                }
-                            });
-                }
-                Files.delete(pathToRemove);
-                return "Directory deleted: " + pathToRemove.toAbsolutePath();
-            } else {
-                // If it's a file, delete the file
-                Files.delete(pathToRemove);
-                return "File deleted: " + pathToRemove.toAbsolutePath();
-            }
-        } catch (IOException e) {
-            return "Error deleting: " + e.getMessage();
-        }
-    }
-
-
-
-    public String CdCommand(String[] args) {
-        if (args.length < 1) {
+    */
+    public String CdCommand(String path) {
+        if (path == null) {
             return "Usage: cd <directory_name>";
         }
         Path targetPath;
-        if ("..".equals(args[0])) {
-            targetPath = Paths.get(System.getProperty("user.dir")).getParent();
+        if ("..".equals(path)) {
+            targetPath = Paths.get(pwd()).getParent();
             if (targetPath == null) { // already at the root
                 return "Already at the root directory";
             }
         } else {
             // If a specific directory is provided, use it as the target path
-            targetPath = Paths.get(args[0]);
+            targetPath = Paths.get(path);
         }
 
         // Resolve relative paths correctly (e.g., ".." to go up a directory)
         try {
-            Path newDir = targetPath.isAbsolute() ? targetPath
-                    : Paths.get(System.getProperty("user.dir")).resolve(targetPath).normalize();
+            Path newDir = targetPath.toAbsolutePath().normalize();
 
             // Check if the directory exists and is a directory
             if (Files.exists(newDir) && Files.isDirectory(newDir)) {
@@ -441,5 +427,12 @@ public class CommandLineInterpreter {
         } catch (Exception e) {
             return "Error changing directory: " + e.getMessage();
         }
+    }
+
+    public String MvCommand(String[] args) {
+        //Path currntdirct = Paths.get(args[0]);
+        //Path Newdirct = Paths.get(args[1]);
+        return "Moved";
+
     }
 }
