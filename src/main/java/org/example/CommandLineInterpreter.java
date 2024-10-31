@@ -112,12 +112,10 @@ public class CommandLineInterpreter {
                 result = MvCommand(commandData.getParameters());
                 printStream.println(result);
                 break;
-            case "exit":
-                return false;
             default:
                 printStream.println("Command " + commandData.getCommand() + " not found.");
         }
-        return true;
+        return  !commandData.getCommand().equalsIgnoreCase("exit");
     }
 
     public String pwd() {
