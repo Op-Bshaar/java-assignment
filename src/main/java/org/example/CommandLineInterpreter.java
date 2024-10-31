@@ -108,7 +108,7 @@ public class CommandLineInterpreter {
                 result = TouchCommand(commandData.getParameters());
                 printStream.println(result);
                 break;
-            case "mر":
+            case "mv":
                 result = MvCommand(commandData.getParameters());
                 printStream.println(result);
                 break;
