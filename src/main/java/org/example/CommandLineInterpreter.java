@@ -314,7 +314,7 @@ public class CommandLineInterpreter {
         if (args.length < 1) {
             return "usage: Touch <FileName>";
         }
-        Path dir = Paths.get(args[0]);
+        Path dir = Paths.get(pwd(),args[0]);
         if (Files.exists(dir)) {
             try {
                 Files.setLastModifiedTime(dir, FileTime.from(Instant.now()));
@@ -389,7 +389,7 @@ public class CommandLineInterpreter {
             }
         } else {
             // If a specific directory is provided, use it as the target path
-            targetPath = Paths.get(path);
+            targetPath = Paths.get(pwd(),path);
         }
 
         // Resolve relative paths correctly (e.g., ".." to go up a directory)
