@@ -21,18 +21,37 @@ import java.util.Scanner;
 import java.util.stream.Stream;
 
 public class CommandLineInterpreter {
+    private PrintStream printStream;
+    private Scanner scanner;
+
+    public CommandLineInterpreter() {
+        scanner = null;
+        printStream = System.out;
+    }
+
+    public CommandLineInterpreter(PrintStream printStream) {
+        this.scanner = null;
+        this.printStream = printStream;
+    }
+
+    public CommandLineInterpreter(PrintStream printStream, Scanner scanner) {
+        this.scanner = scanner;
+        this.printStream = printStream;
+    }
 
     public void runCommandLine() {
-
-        Scanner scanner = new Scanner(System.in);
+        final boolean closeScanner = scanner == null;
+        scanner = scanner == null ? new Scanner(System.in) : scanner;
         boolean run = true;
         while (run) {
-            System.out.print(pwd() + "> ");
+            printStream.print(pwd() + "> ");
             final String input = scanner.nextLine().trim();
             run = executeCommand(input);
         }
-        System.out.println("Exiting..");
-        scanner.close();
+        printStream.println("Exiting..");
+        if (closeScanner) {
+            scanner.close();
+        }
     }
 
     private Boolean executeCommand(String command, PrintStream out) {
@@ -42,7 +61,8 @@ public class CommandLineInterpreter {
         try {
             // Check if output redirection is needed
             if (commandData.getRedirectFile() != null) {
-                FileOutputStream fileOutputStream = new FileOutputStream(commandData.getRedirectFile(), commandData.isAppend());
+                FileOutputStream fileOutputStream = new FileOutputStream(commandData.getRedirectFile(),
+                        commandData.isAppend());
                 printStream = new PrintStream(fileOutputStream);
             }
 
@@ -58,30 +78,34 @@ public class CommandLineInterpreter {
         return run;
     }
 
-    public Boolean executeCommand(String command){
+    public Boolean executeCommand(String command) {
         boolean run = true;
         final String[] commands = command.split("\\|");
-        final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        final PrintStream printStream = new PrintStream(outputStream);
         String lastOutput = "";
-        for (int i = 0; i < commands.length - 1; i++) {
-            final String cmd = commands[i];
-            run = executeCommand(cmd + lastOutput, printStream);
-            lastOutput = " " + outputStream.toString();
+        if (commands.length == 0) {
+            this.printStream.println("error no input:");
+            return true;
+        }
+
+        for (int i = 0; i < commands.length; i++) {
+            final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            final PrintStream printStream = new PrintStream(outputStream);
+            CommandData commandData = new CommandData(commands[i] + " " + lastOutput);
+            run = executeCommand(commandData, printStream);
+            lastOutput = outputStream.toString();
+            // close
+            printStream.close();
+            try {
+                outputStream.close();
+            } catch (IOException e) {
+                this.printStream.println("error" + e.getMessage());
+            }
             if (!run) {
-                break;
+                return false;
             }
         }
-        if (commands.length > 0 && run) {
-            final String cmd = commands[commands.length - 1] + lastOutput;
-            run = executeCommand(cmd, System.out);
-        }
-        printStream.close();
-        try {
-            outputStream.close();
-        } catch (IOException e) {
-            System.out.println(e.getMessage());
-        }
+        CommandData commandData = new CommandData(commands[0] + " " + lastOutput);
+        run = executeCommand(commandData, this.printStream);
         return run;
     }
 
