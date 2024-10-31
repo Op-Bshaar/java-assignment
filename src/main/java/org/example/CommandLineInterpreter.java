@@ -17,54 +17,9 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Scanner;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 public class CommandLineInterpreter {
-
-    private class CommandData {
-        private String command;
-        private String[] parameters;
-        private String redirectFile = null;
-        private boolean append = false;
-
-        private String getFirstParameter() {
-            return parameters.length > 0 ? parameters[0] : null;
-        }
-
-        private CommandData(String commandInput) {
-            Pattern pattern = Pattern.compile("\"([^\"]*)\"|\\S+");
-            Matcher matcher = pattern.matcher(commandInput);
-            ArrayList<String> partsList = new ArrayList<>();
-            while (matcher.find()) {
-                if (matcher.group(1) != null) {
-                    partsList.add(matcher.group(1));
-                } else {
-                    partsList.add(matcher.group());
-                }
-            }
-
-            for (int i = partsList.size() - 1; i >= 0; i--) {
-                String part = partsList.get(i);
-                if (part.equals(">") || part.equals(">>")) {
-                    if (i + 1 < partsList.size()) { // Ensure there is a filename after `>` or `>>`
-                        this.redirectFile = partsList.get(i + 1);
-                        this.append = part.equals(">>");
-                        partsList = new ArrayList<>(partsList.subList(0, i));
-                    } else {
-                        System.out.println("Usage <command> " + part + " <file path>");
-                    }
-                    break;
-                }
-            }
-
-            this.command = partsList.get(0);
-            this.parameters = partsList.size() > 1 ? partsList.subList(1, partsList.size()).toArray(new String[0])
-                    : new String[0];
-        }
-
-    }
 
     public void runCommandLine() {
 
@@ -85,10 +40,10 @@ public class CommandLineInterpreter {
         PrintStream printStream = System.out; // Default to standard output
         try {
             // Check if output redirection is needed
-            if (commandData.redirectFile != null) {
+            if (commandData.getRedirectFile() != null) {
                 // Open a FileOutputStream in append or overwrite mode based on the `append`
                 // flag
-                FileOutputStream fos = new FileOutputStream(commandData.redirectFile, commandData.append);
+                FileOutputStream fos = new FileOutputStream(commandData.getRedirectFile(), commandData.isAppend());
                 printStream = new PrintStream(fos);
             }
 
@@ -107,13 +62,13 @@ public class CommandLineInterpreter {
 
     private Boolean executeCommand(CommandData commandData, PrintStream printStream) {
 
-        switch (commandData.command) {
+        switch (commandData.getCommand()) {
             case "mkdir":
-                String path = MkdirCommand(commandData.parameters);
+                String path = MkdirCommand(commandData.getParameters());
                 printStream.println(path);
                 break;
             case "rm":
-                String output = RmCommand(commandData.parameters);
+                String output = RmCommand(commandData.getParameters());
                 printStream.println(output);
                 break;
             case "help":
@@ -121,14 +76,14 @@ public class CommandLineInterpreter {
                 printStream.println(result);
 
             case "ls":
-                printStream.println(Ls(commandData.parameters));
+                printStream.println(Ls(commandData.getParameters()));
                 break;
             case "cd":
                 String help = CdCommand(commandData.getFirstParameter());
                 printStream.println(help);
                 break;
             case "rmdir":
-                String any = RmdirCommand(commandData.parameters);
+                String any = RmdirCommand(commandData.getParameters());
                 printStream.println(any);
                 break;
             case "pwd": {
@@ -144,23 +99,23 @@ public class CommandLineInterpreter {
                 break;
             }
             case "echo":
-                String message = commandData.parameters.length > 0
-                        ? String.join(" ", commandData.parameters)
+                String message = commandData.getParameters().length > 0
+                        ? String.join(" ", commandData.getParameters())
                         : "Usage: echo <message>";
                 printStream.println(message);
                 break;
             case "touch":
-                result = TouchCommand(commandData.parameters);
+                result = TouchCommand(commandData.getParameters());
                 printStream.println(result);
                 break;
             case "move":
-                result = MvCommand(commandData.parameters);
+                result = MvCommand(commandData.getParameters());
                 printStream.println(result);
                 break;
             case "exit":
                 return false;
             default:
-                printStream.println("Command " + commandData.command + " not found.");
+                printStream.println("Command " + commandData.getCommand() + " not found.");
         }
         return true;
     }
@@ -455,8 +410,8 @@ public class CommandLineInterpreter {
     }
 
     public String MvCommand(String[] args) {
-        Path currntdirct = Paths.get(args[0]);
-        Path Newdirct = Paths.get(args[1]);
+        //Path currntdirct = Paths.get(args[0]);
+        //Path Newdirct = Paths.get(args[1]);
         return "Moved";
 
     }
