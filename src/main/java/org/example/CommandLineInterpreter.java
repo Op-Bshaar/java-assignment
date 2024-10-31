@@ -83,7 +83,7 @@ public class CommandLineInterpreter {
                 printStream.println(help);
                 break;
             case "rmdir":
-                String any = RmdirCommand(commandData.getParameters());
+                String any = RmdirCommand(commandData.getFirstParameter());
                 printStream.println(any);
                 break;
             case "pwd": {
@@ -151,7 +151,7 @@ public class CommandLineInterpreter {
             return "Usage: mkdir <directory_name>";
         }
 
-        Path dirPath = Paths.get(pwd(), path);
+        Path dirPath = Paths.get(path).isAbsolute() ? Paths.get(path).normalize() : Paths.get(pwd(), path).normalize();
         try {
             Files.createDirectories(dirPath);
             return "Directory created: " + dirPath.toAbsolutePath();
@@ -173,7 +173,7 @@ public class CommandLineInterpreter {
     }
 
     public String RmCommand(String file) {
-        Path rmPath = Paths.get(pwd(),file);
+        Path rmPath = Paths.get(file).isAbsolute() ? Paths.get(file).normalize() : Paths.get(pwd(), file).normalize();
         try {
             if (Files.isDirectory(rmPath)) {
                 Files.deleteIfExists(rmPath);
@@ -352,13 +352,29 @@ public class CommandLineInterpreter {
         }
 
     }
-    public String RmdirCommand(String path){
-        if (path == null) {
-            return "Usage: rmdir <directory_name>";
+    
+    public String RmdirCommand(String dir) {
+        Path dirPath = Paths.get(dir).isAbsolute() ? Paths.get(dir).normalize() : Paths.get(pwd(), dir).normalize();
+        try {
+            if (Files.isDirectory(dirPath)) {
+                // Check if the directory is empty
+                try (DirectoryStream<Path> entries = Files.newDirectoryStream(dirPath)) {
+                    if (entries.iterator().hasNext()) {
+                        return "Directory is not empty: " + dirPath.toAbsolutePath();
+                    }
+                }
+                // Directory is empty, proceed to delete
+                Files.delete(dirPath);
+                return "Directory deleted: " + dirPath.toAbsolutePath();
+            } else {
+                return "Not a directory: " + dirPath.toAbsolutePath();
+            }
+        } catch (IOException e) {
+            return "Error deleting directory: " + e.getMessage();
         }
-        Path dirPath = Paths.get(pwd(), path).normalize();
-        return path;
     }
+    
+    /*
     public String RmdirCommand(String[] args) {
         if (args.length < 1) {
             return "Usage: rmdir <directory_name>";
@@ -380,14 +396,14 @@ public class CommandLineInterpreter {
             return "Error deleting directory: " + e.getMessage();
         }
     }
-
+    */
     public String CdCommand(String path) {
         if (path == null) {
             return "Usage: cd <directory_name>";
         }
         Path targetPath;
         if ("..".equals(path)) {
-            targetPath = Paths.get(System.getProperty("user.dir")).getParent();
+            targetPath = Paths.get(pwd()).getParent();
             if (targetPath == null) { // already at the root
                 return "Already at the root directory";
             }
