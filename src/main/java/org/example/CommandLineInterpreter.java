@@ -145,15 +145,13 @@ public class CommandLineInterpreter {
         }
     }
 
-    // bashar command
-
     public String MkdirCommand(String path) {
 
         if (path == null) {
             return "Usage: mkdir <directory_name>";
         }
 
-        Path dirPath = Paths.get(path);
+        Path dirPath = Paths.get(pwd(), path);
         try {
             Files.createDirectories(dirPath);
             return "Directory created: " + dirPath.toAbsolutePath();
@@ -175,7 +173,7 @@ public class CommandLineInterpreter {
     }
 
     public String RmCommand(String file) {
-        Path rmPath = Paths.get(file);
+        Path rmPath = Paths.get(pwd(),file);
         try {
             if (Files.isDirectory(rmPath)) {
                 Files.deleteIfExists(rmPath);
@@ -354,13 +352,19 @@ public class CommandLineInterpreter {
         }
 
     }
-
+    public String RmdirCommand(String path){
+        if (path == null) {
+            return "Usage: rmdir <directory_name>";
+        }
+        Path dirPath = Paths.get(pwd(), path).normalize();
+        return path;
+    }
     public String RmdirCommand(String[] args) {
         if (args.length < 1) {
             return "Usage: rmdir <directory_name>";
         }
 
-        Path dirPath = Paths.get(args[0]);
+        Path dirPath = Paths.get(pwd(), args[0]).normalize();
         try {
             Files.walk(dirPath)
                     .forEach(path -> {
